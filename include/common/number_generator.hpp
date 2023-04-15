@@ -1,159 +1,99 @@
 #pragma once
 #include <random>
 
+class NumberGenerator {
+ protected:
+  std::random_device rd;
+  std::mt19937 gen;
 
-class NumberGenerator
-{
-protected:
-	std::random_device rd;
-	std::mt19937 gen;
-
-	NumberGenerator()
-		: gen(0)
-	{}
+  NumberGenerator() : gen(0) {}
 };
 
+template <typename T>
+class RealNumberGenerator : public NumberGenerator {
+ private:
+  std::uniform_real_distribution<T> dis;
 
-template<typename T>
-class RealNumberGenerator : public NumberGenerator
-{
-private:
-	std::uniform_real_distribution<T> dis;
+ public:
+  RealNumberGenerator() : NumberGenerator(), dis(0.0f, 1.0f) {}
 
-public:
-	RealNumberGenerator()
-		: NumberGenerator()
-		, dis(0.0f, 1.0f)		
-	{}
-	
-	// random_device is not copyable
-	RealNumberGenerator(const RealNumberGenerator<T>& right)
-		: NumberGenerator()
-		, dis(right.dis)
-	{}
+  // random_device is not copyable
+  RealNumberGenerator(const RealNumberGenerator<T>& right)
+      : NumberGenerator(), dis(right.dis) {}
 
-	float get()
-	{
-		return dis(gen);
-	}
+  float get() { return dis(gen); }
 
-	float getUnder(T max)
-	{
-		return get() * max;
-	}
+  float getUnder(T max) { return get() * max; }
 
-	float getRange(T min, T max)
-	{
-		return min + get() * (max - min);
-	}
+  float getRange(T min, T max) { return min + get() * (max - min); }
 
-	float getRange(T width)
-	{
-		return getRange(-width * 0.5f, width * 0.5f);
-	}
+  float getRange(T width) { return getRange(-width * 0.5f, width * 0.5f); }
 };
 
+template <typename T>
+class RNG {
+ private:
+  static RealNumberGenerator<T>* gen;
 
-template<typename T>
-class RNG
-{
-private:
-	static RealNumberGenerator<T>* gen;
+ public:
+  static void initialize() { gen = new RealNumberGenerator<T>(); }
 
-public:
-    static void initialize()
-    {
-        gen = new RealNumberGenerator<T>();
-    }
+  static T get() { return gen->get(); }
 
-	static T get()
-	{
-		return gen->get();
-	}
+  static float getUnder(T max) { return gen->getUnder(max); }
 
-	static float getUnder(T max)
-	{
-		return gen->getUnder(max);
-	}
+  static uint64_t getUintUnder(uint64_t max) {
+    return static_cast<uint64_t>(gen->getUnder(static_cast<float>(max) + 1.0f));
+  }
 
-	static uint64_t getUintUnder(uint64_t max)
-	{
-		return static_cast<uint64_t>(gen->getUnder(static_cast<float>(max) + 1.0f));
-	}
+  static float getRange(T min, T max) { return gen->getRange(min, max); }
 
-	static float getRange(T min, T max)
-	{
-		return gen->getRange(min, max);
-	}
+  static float getRange(T width) { return gen->getRange(width); }
 
-	static float getRange(T width)
-	{
-		return gen->getRange(width);
-	}
+  static float getFullRange(T width) {
+    return gen->getRange(static_cast<T>(2.0f) * width);
+  }
 
-	static float getFullRange(T width)
-	{
-		return gen->getRange(static_cast<T>(2.0f) * width);
-	}
-
-	static bool proba(float threshold)
-	{
-		return get() < threshold;
-	}
+  static bool proba(float threshold) { return get() < threshold; }
 };
 
 using RNGf = RNG<float>;
 
-template<typename T>
+template <typename T>
 RealNumberGenerator<T>* RNG<T>::gen = nullptr;
 
+template <typename T>
+class IntegerNumberGenerator : public NumberGenerator {
+ public:
+  IntegerNumberGenerator() : NumberGenerator() {}
 
-template<typename T>
-class IntegerNumberGenerator : public NumberGenerator
-{
-public:
-	IntegerNumberGenerator()
-		: NumberGenerator()
-	{}
+  // random_device is not copyable
+  IntegerNumberGenerator(const IntegerNumberGenerator<T>&)
+      : NumberGenerator() {}
 
-	// random_device is not copyable
-	IntegerNumberGenerator(const IntegerNumberGenerator<T>&)
-		: NumberGenerator()
-	{}
+  T getUnder(T max) {
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
+    return dist(gen);
+  }
 
-	T getUnder(T max)
-	{
-		std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
-		return dist(gen);
-	}
-
-	T getRange(T min, T max)
-	{
-		std::uniform_int_distribution<std::mt19937::result_type> dist(min, max);
-		return dist(gen);
-	}
+  T getRange(T min, T max) {
+    std::uniform_int_distribution<std::mt19937::result_type> dist(min, max);
+    return dist(gen);
+  }
 };
 
+template <typename T>
+class RNGi {
+ private:
+  static IntegerNumberGenerator<T> gen;
 
-template<typename T>
-class RNGi
-{
-private:
-	static IntegerNumberGenerator<T> gen;
+ public:
+  static T getUnder(T max) { return gen.getUnder(max); }
 
-public:
-	static T getUnder(T max)
-	{
-		return gen.getUnder(max);
-	}
-
-	static T getRange(T min, T max)
-	{
-		return gen.getRange(min, max);
-	}
+  static T getRange(T min, T max) { return gen.getRange(min, max); }
 };
 
-template<typename T>
+template <typename T>
 IntegerNumberGenerator<T> RNGi<T>::gen;
 
 using RNGi32 = RNGi<int32_t>;
