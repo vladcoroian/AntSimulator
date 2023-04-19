@@ -14,6 +14,7 @@
 #include "editor/world_view.hpp"
 #include "time_control/time_controller.hpp"
 #include "display_options/display_options.hpp"
+#include "map_generator/map_generator.hpp"
 
 namespace edtr {
 
@@ -87,6 +88,10 @@ struct EditorScene : public GUI::Scene {
     // Add colonies edition tools
     auto colonies = create<ColonyCreator>(simulation, control_state);
     toolbox->addItem(colonies);
+
+    auto mapGenerator = create<MapGenerator>(simulation, control_state);
+    toolbox->addItem(mapGenerator);
+
     // Add time controls
     auto time_controls = create<TimeController>();
     watch(time_controls, [this, time_controls]() {

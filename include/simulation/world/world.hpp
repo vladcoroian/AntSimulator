@@ -28,6 +28,19 @@ struct World {
     }
   }
 
+  void resetMap() {
+    for (int32_t x(0); x < map.width; x++) {
+      for (int32_t y(0); y < map.height; y++) {
+        WorldCell& cell = map.get(sf::Vector2i(x, y));
+        cell.food = 0;
+        cell.wall = 0;
+        for (auto& markers : cell.markers) {
+          clearMarkersOfCell(markers);
+        }
+      }
+    }
+  }
+
   void update(float dt) { map.update(dt); }
 
   void addMarker(sf::Vector2f pos, Mode type, float intensity,
