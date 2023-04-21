@@ -41,6 +41,7 @@ struct World {
     }
   }
 
+
   void update(float dt) { map.update(dt); }
 
   void addMarker(sf::Vector2f pos, Mode type, float intensity,
@@ -69,6 +70,12 @@ struct World {
   }
 
   void removeWall(const sf::Vector2f& position) {
+    if (map.checkCoords(position)) {
+      map.get(position).wall = 0;
+    }
+  }
+
+  void removeWall(const sf::Vector2i& position) {
     if (map.checkCoords(position)) {
       map.get(position).wall = 0;
     }
@@ -107,5 +114,14 @@ struct World {
     cell.intensity[2] = 0.0f;
     cell.repellent = 0.0f;
     cell.permanent = false;
+  }
+
+
+  void fillWithWalls() {
+    for (int32_t x(0); x < map.width; x++) {
+      for (int32_t y(0); y < map.height; y++) {
+        addWall(sf::Vector2i(x, y));
+      }
+    }
   }
 };
