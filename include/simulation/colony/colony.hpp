@@ -51,8 +51,8 @@ struct Colony {
 
   Ant& createWorker() {
     ++ant_creation_id;
-    const uint64_t ant_id = ants.emplace_back(base.position.x, base.position.y,
-                                              RNGf::getUnder(2.0f * PI), id);
+    const uint64_t ant_id =
+        ants.emplace_back(base.position.x, base.position.y, RNGf::getUnder(2.0f * PI), id);
     Ant& ant = ants[ant_id];
     ant.id = to<uint16_t>(ant_id);
     ant.type = Ant::Type::Worker;
@@ -77,8 +77,7 @@ struct Colony {
 
   [[nodiscard]] bool mustCreateSoldier() const {
     const uint32_t soldiers_creation_discard = 5;
-    return base.enemies_found_count &&
-           (ant_creation_id % soldiers_creation_discard == 0);
+    return base.enemies_found_count && (ant_creation_id % soldiers_creation_discard == 0);
   }
 
   [[nodiscard]] bool isNotFull() const { return ants.size() < max_ants_count; }
@@ -133,9 +132,8 @@ struct Colony {
   }
 
   [[nodiscard]] uint32_t soldiersCount() const {
-    return to<uint32_t>(std::count_if(
-        ants.begin(), ants.end(),
-        [](const Ant& a) { return a.type == Ant::Type::Soldier; }));
+    return to<uint32_t>(std::count_if(ants.begin(), ants.end(),
+                                      [](const Ant& a) { return a.type == Ant::Type::Soldier; }));
   }
 
   void setColor(sf::Color color) {

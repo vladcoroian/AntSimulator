@@ -18,8 +18,7 @@ class RealNumberGenerator : public NumberGenerator {
   RealNumberGenerator() : NumberGenerator(), dis(0.0f, 1.0f) {}
 
   // random_device is not copyable
-  RealNumberGenerator(const RealNumberGenerator<T>& right)
-      : NumberGenerator(), dis(right.dis) {}
+  RealNumberGenerator(const RealNumberGenerator<T>& right) : NumberGenerator(), dis(right.dis) {}
 
   float get() { return dis(gen); }
 
@@ -50,9 +49,7 @@ class RNG {
 
   static float getRange(T width) { return gen->getRange(width); }
 
-  static float getFullRange(T width) {
-    return gen->getRange(static_cast<T>(2.0f) * width);
-  }
+  static float getFullRange(T width) { return gen->getRange(static_cast<T>(2.0f) * width); }
 
   static bool proba(float threshold) { return get() < threshold; }
 };
@@ -68,8 +65,7 @@ class IntegerNumberGenerator : public NumberGenerator {
   IntegerNumberGenerator() : NumberGenerator() {}
 
   // random_device is not copyable
-  IntegerNumberGenerator(const IntegerNumberGenerator<T>&)
-      : NumberGenerator() {}
+  IntegerNumberGenerator(const IntegerNumberGenerator<T>&) : NumberGenerator() {}
 
   T getUnder(T max) {
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);

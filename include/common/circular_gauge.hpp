@@ -13,8 +13,7 @@ struct CircularGauge {
 
   uint32_t quality = 32;
 
-  CircularGauge(sf::Vector2f pos, float inner_r, float outer_r,
-                const sf::Color& color_)
+  CircularGauge(sf::Vector2f pos, float inner_r, float outer_r, const sf::Color& color_)
       : position(pos),
         color(color_),
         outer_radius(outer_r),

@@ -12,12 +12,9 @@ struct TextLabel : public Item {
 
   Alignment alignment;
 
-  TextLabel(const std::string& label_, uint32_t char_size_,
-            sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
-      : Item(position_, size_),
-        label(label_),
-        char_size(char_size_),
-        alignment(Alignment::Center) {
+  TextLabel(const std::string& label_, uint32_t char_size_, sf::Vector2f size_ = {},
+            sf::Vector2f position_ = {})
+      : Item(position_, size_), label(label_), char_size(char_size_), alignment(Alignment::Center) {
     padding = 1.0f;
     font.loadFromFile("res/font.ttf");
     text.setFont(font);

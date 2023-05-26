@@ -71,8 +71,7 @@ struct Ant {
   Ant(float x, float y, float angle, uint8_t colony_id)
       : position(x, y),
         direction(angle),
-        direction_update(direction_update_period,
-                         RNGf::getUnder(1.0f) * direction_update_period),
+        direction_update(direction_update_period, RNGf::getUnder(1.0f) * direction_update_period),
         marker_add(marker_period, RNGf::getUnder(1.0f) * marker_period),
         search_markers(5.0f, 5.0f),
         phase(Mode::ToFood),
@@ -104,16 +103,13 @@ struct Ant {
     }
   }
 
-  [[nodiscard]] bool isFighting() const {
-    return fight_mode == FightMode::Fighting;
-  }
+  [[nodiscard]] bool isFighting() const { return fight_mode == FightMode::Fighting; }
 
   void attack(float dt) {
     if (target) {
       Ant& opponent = *target;
       position =
-          fight_pos - fight_vec * (0.5f * length +
-                                   (attack_cooldown.getRatio()) * fight_dist);
+          fight_pos - fight_vec * (0.5f * length + (attack_cooldown.getRatio()) * fight_dist);
       attack_cooldown.update(dt);
       if (attack_cooldown.ready()) {
         attack_cooldown.reset();
@@ -145,8 +141,8 @@ struct Ant {
       hits = 0;
       position += (dt * move_speed) * v;
       // Ants outside the map go back to home
-      if (position.x < 0.0f || position.x > to<float>(Conf::WORLD_WIDTH) ||
-          position.y < 0.0f || position.y > to<float>(Conf::WORLD_HEIGHT)) {
+      if (position.x < 0.0f || position.x > to<float>(Conf::WORLD_WIDTH) || position.y < 0.0f ||
+          position.y > to<float>(Conf::WORLD_HEIGHT)) {
         terminate();
       }
     }
@@ -198,8 +194,7 @@ struct Ant {
   }
 
   [[nodiscard]] Mode getMarkersSamplingType() const {
-    if (phase == Mode::ToHome || phase == Mode::Refill ||
-        phase == Mode::ToHomeNoFood) {
+    if (phase == Mode::ToHome || phase == Mode::Refill || phase == Mode::ToHomeNoFood) {
       return Mode::ToHome;
     }
     return phase;
@@ -213,18 +208,16 @@ struct Ant {
   void addMarker(World& world) const {
     if (phase == Mode::ToHome || phase == Mode::ToFood) {
       const float intensity = getMarkerIntensity(0.05f, internal_clock);
-      world.addMarker(position,
-                      phase == Mode::ToFood ? Mode::ToHome : Mode::ToFood,
-                      intensity, col_id);
+      world.addMarker(position, phase == Mode::ToFood ? Mode::ToHome : Mode::ToFood, intensity,
+                      col_id);
     } else if (phase == Mode::ToHomeNoFood) {
-      const auto intensity =
-          to<float>(getMarkerIntensity(0.1f, internal_clock));
+      const auto intensity = to<float>(getMarkerIntensity(0.1f, internal_clock));
       world.addMarkerRepellent(position, col_id, intensity);
     }
     if (enemy_found) {
       // If enemy found add ToEnemy markers
-      const float intensity = std::min(0.1f, enemy_intensity) *
-                              getMarkerIntensity(0.05f, to_enemy_markers_count);
+      const float intensity =
+          std::min(0.1f, enemy_intensity) * getMarkerIntensity(0.05f, to_enemy_markers_count);
       world.addMarker(position, Mode::ToEnemy, intensity, col_id);
     }
   }
@@ -236,14 +229,10 @@ struct Ant {
       food_pos = position + length * 0.65f * direction.getVec();
     }
 
-    va[index + 0].position =
-        sf::Vector2f(food_pos.x - radius, food_pos.y - radius);
-    va[index + 1].position =
-        sf::Vector2f(food_pos.x + radius, food_pos.y - radius);
-    va[index + 2].position =
-        sf::Vector2f(food_pos.x + radius, food_pos.y + radius);
-    va[index + 3].position =
-        sf::Vector2f(food_pos.x - radius, food_pos.y + radius);
+    va[index + 0].position = sf::Vector2f(food_pos.x - radius, food_pos.y - radius);
+    va[index + 1].position = sf::Vector2f(food_pos.x + radius, food_pos.y - radius);
+    va[index + 2].position = sf::Vector2f(food_pos.x + radius, food_pos.y + radius);
+    va[index + 3].position = sf::Vector2f(food_pos.x - radius, food_pos.y + radius);
   }
 
   void render_in(sf::VertexArray& va, const uint32_t index) const {

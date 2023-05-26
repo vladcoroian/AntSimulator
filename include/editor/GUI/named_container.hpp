@@ -15,8 +15,8 @@ struct NamedContainer : public Container {
 
   bool show_root = true;
 
-  NamedContainer(const std::string& name, Container::Orientation orientation =
-                                              Container::Orientation::Vertical)
+  NamedContainer(const std::string& name,
+                 Container::Orientation orientation = Container::Orientation::Vertical)
       : Container(Container::Orientation::Vertical) {
     padding = 7.0f;
     spacing = 5.0f;
@@ -76,8 +76,7 @@ struct NamedContainer : public Container {
   void render(sf::RenderTarget& target) override {
     const float angle_radius = 10.0f;
     RoundedRectangle background(size, position, angle_radius);
-    background.setFillColor(
-        {background_intensity, background_intensity, background_intensity});
+    background.setFillColor({background_intensity, background_intensity, background_intensity});
     GUI::Item::draw(target, background);
   }
 

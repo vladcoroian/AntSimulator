@@ -16,8 +16,7 @@ struct DefaultButton : public GUI::Item {
   DefaultButton(sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
       : GUI::Item(size_, position_) {}
 
-  DefaultButton(ButtonCallBack callback, sf::Vector2f size_ = {},
-                sf::Vector2f position_ = {})
+  DefaultButton(ButtonCallBack callback, sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
       : GUI::Item(size_, position_), click_callback(callback) {}
 
   void onClick(sf::Vector2f, sf::Mouse::Button) override { click_callback(); }
@@ -28,8 +27,7 @@ struct Button : public DefaultButton {
   SPtr<TextLabel> label;
   sf::Color background_color = sf::Color::White;
 
-  Button(const std::string& text, ButtonCallBack callback)
-      : DefaultButton(callback) {
+  Button(const std::string& text, ButtonCallBack callback) : DefaultButton(callback) {
     label = create<TextLabel>(text, 14);
     label->catch_event = false;
     addItem(label);

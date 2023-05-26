@@ -12,10 +12,7 @@ struct ColorVariation : public GUI::Item {
   sf::Vector2f selection;
 
   explicit ColorVariation(sf::Vector2f size_ = {})
-      : GUI::Item(size_),
-        color_va(sf::Quads, 8),
-        color(sf::Color::Red),
-        selection(0.0f, 0.0f) {
+      : GUI::Item(size_), color_va(sf::Quads, 8), color(sf::Color::Red), selection(0.0f, 0.0f) {
     initializeVA();
     updateSelectedColor();
   }
@@ -49,12 +46,9 @@ struct ColorVariation : public GUI::Item {
 
   [[nodiscard]] sf::Color getColorAt() const {
     return ColorUtils::createColor(
-        (to<float>(color.r) + to<float>(255 - color.r) * selection.x) *
-            selection.y,
-        (to<float>(color.g) + to<float>(255 - color.g) * selection.x) *
-            selection.y,
-        (to<float>(color.b) + to<float>(255 - color.b) * selection.x) *
-            selection.y);
+        (to<float>(color.r) + to<float>(255 - color.r) * selection.x) * selection.y,
+        (to<float>(color.g) + to<float>(255 - color.g) * selection.x) * selection.y,
+        (to<float>(color.b) + to<float>(255 - color.b) * selection.x) * selection.y);
   }
 
   void updateSelectedColor() {
@@ -86,8 +80,8 @@ struct ColorVariation : public GUI::Item {
     const float selection_radius = 8.0f;
     sf::CircleShape c(selection_radius);
     c.setOrigin(selection_radius, selection_radius);
-    c.setPosition(position + sf::Vector2f(size.x * (1.0f - selection.x),
-                                          size.y * (1.0f - selection.y)));
+    c.setPosition(position +
+                  sf::Vector2f(size.x * (1.0f - selection.x), size.y * (1.0f - selection.y)));
     c.setFillColor(current_color);
     c.setOutlineColor(sf::Color::White);
     c.setOutlineThickness(2.0f);
@@ -106,11 +100,9 @@ struct HueSlider : public GUI::Item {
   sf::VertexArray hues_va;
   sf::Color selected_color = sf::Color::Red;
 
-  explicit HueSlider(sf::Vector2f size_ = {})
-      : GUI::Item(size_), hues_va(sf::TriangleStrip, 14) {
-    colors = {sf::Color::Red,  sf::Color::Yellow, sf::Color::Green,
-              sf::Color::Cyan, sf::Color::Blue,   sf::Color::Magenta,
-              sf::Color::Red};
+  explicit HueSlider(sf::Vector2f size_ = {}) : GUI::Item(size_), hues_va(sf::TriangleStrip, 14) {
+    colors = {sf::Color::Red,  sf::Color::Yellow,  sf::Color::Green, sf::Color::Cyan,
+              sf::Color::Blue, sf::Color::Magenta, sf::Color::Red};
     updateVA();
   }
 
@@ -118,10 +110,8 @@ struct HueSlider : public GUI::Item {
     const float hue_length = size.x / to<float>(colors.size() - 1);
     int32_t i = 0;
     for (const sf::Color& c : colors) {
-      hues_va[2 * i + 0].position =
-          position + sf::Vector2f(to<float>(i) * hue_length, 0.0f);
-      hues_va[2 * i + 1].position =
-          position + sf::Vector2f(to<float>(i) * hue_length, size.y);
+      hues_va[2 * i + 0].position = position + sf::Vector2f(to<float>(i) * hue_length, 0.0f);
+      hues_va[2 * i + 1].position = position + sf::Vector2f(to<float>(i) * hue_length, size.y);
       hues_va[2 * i + 0].color = c;
       hues_va[2 * i + 1].color = c;
       ++i;
@@ -140,10 +130,10 @@ struct HueSlider : public GUI::Item {
     const sf::Color color_1 = colors[color_index];
     const sf::Color color_2 = colors[color_index + 1];
     const float ratio = color_div - to<float>(color_index);
-    selected_color = createColor(
-        (1.0f - ratio) * to<float>(color_1.r) + ratio * to<float>(color_2.r),
-        (1.0f - ratio) * to<float>(color_1.g) + ratio * to<float>(color_2.g),
-        (1.0f - ratio) * to<float>(color_1.b) + ratio * to<float>(color_2.b));
+    selected_color =
+        createColor((1.0f - ratio) * to<float>(color_1.r) + ratio * to<float>(color_2.r),
+                    (1.0f - ratio) * to<float>(color_1.g) + ratio * to<float>(color_2.g),
+                    (1.0f - ratio) * to<float>(color_1.b) + ratio * to<float>(color_2.b));
     notifyChanged();
   }
 
@@ -181,8 +171,7 @@ struct ColorPicker : public GUI::Container {
     addItem(hue_slider, "Hue slider");
 
     // Add callbacks to sub_items changes
-    watch(hue_slider,
-          [this]() { color_variation->setColor(hue_slider->selected_color); });
+    watch(hue_slider, [this]() { color_variation->setColor(hue_slider->selected_color); });
 
     watch(color_variation, [this]() { notifyChanged(); });
   }
@@ -191,14 +180,11 @@ struct ColorPicker : public GUI::Container {
     // setHeight(size.x);
   }
 
-  [[nodiscard]] sf::Color getColor() const {
-    return color_variation->selected_color;
-  }
+  [[nodiscard]] sf::Color getColor() const { return color_variation->selected_color; }
 
   void setRandomColor() const {
     hue_slider->updateSelectedColor(RNGf::getUnder(1.0f));
-    color_variation->selection = {RNGf::getUnder(0.5f),
-                                  RNGf::getRange(0.5f, 1.0f)};
+    color_variation->selection = {RNGf::getUnder(0.5f), RNGf::getRange(0.5f, 1.0f)};
     color_variation->updateSelectedColor();
   }
 };

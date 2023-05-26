@@ -6,8 +6,7 @@
 struct ControlState {
   using ViewAction = std::function<void(sf::Vector2f)>;
   using Action = std::function<void(void)>;
-  using DrawAction =
-      std::function<void(sf::RenderTarget&, const ViewportHandler&)>;
+  using DrawAction = std::function<void(sf::RenderTarget&, const ViewportHandler&)>;
   // Actions
   Action action = nullptr;
   ViewAction view_action = nullptr;
@@ -44,8 +43,7 @@ struct ControlState {
     }
   }
 
-  void executeDrawAction(sf::RenderTarget& target,
-                         const ViewportHandler& vp_handler) {
+  void executeDrawAction(sf::RenderTarget& target, const ViewportHandler& vp_handler) {
     if (draw_action) {
       draw_action(target, vp_handler);
     }

@@ -28,21 +28,17 @@ struct Scene {
   }
 
   void initializeEventsCallbacks() {
-    event_manager.addEventCallback(sf::Event::Closed,
-                                   [&](const sf::Event&) { window.close(); });
-    event_manager.addEventCallback(
-        sf::Event::MouseButtonPressed,
-        [&](const sf::Event& e) { dispatchClick(e); });
+    event_manager.addEventCallback(sf::Event::Closed, [&](const sf::Event&) { window.close(); });
+    event_manager.addEventCallback(sf::Event::MouseButtonPressed,
+                                   [&](const sf::Event& e) { dispatchClick(e); });
     event_manager.addEventCallback(sf::Event::MouseButtonReleased,
                                    [&](const sf::Event& e) { unclick(e); });
-    event_manager.addEventCallback(
-        sf::Event::MouseMoved,
-        [&](const sf::Event& e) { mouseMove(e.mouseMove.x, e.mouseMove.y); });
-    event_manager.addEventCallback(
-        sf::Event::KeyPressed,
-        [&](const sf::Event& e) { processKeyPressed(e); });
-    event_manager.addEventCallback(sf::Event::Resized,
-                                   [this](sfev::CstEv) { resize(); });
+    event_manager.addEventCallback(sf::Event::MouseMoved, [&](const sf::Event& e) {
+      mouseMove(e.mouseMove.x, e.mouseMove.y);
+    });
+    event_manager.addEventCallback(sf::Event::KeyPressed,
+                                   [&](const sf::Event& e) { processKeyPressed(e); });
+    event_manager.addEventCallback(sf::Event::Resized, [this](sfev::CstEv) { resize(); });
   }
 
   virtual void onSizeChange() {}
@@ -64,19 +60,15 @@ struct Scene {
   }
 
   void processEvents() {
-    mouse_position =
-        toVector2f(sf::Mouse::getPosition(event_manager.getWindow()));
-    event_manager.processEvents(
-        [&](const sf::Event& e) { root.executeCallback(e); });
+    mouse_position = toVector2f(sf::Mouse::getPosition(event_manager.getWindow()));
+    event_manager.processEvents([&](const sf::Event& e) { root.executeCallback(e); });
   }
 
   void dispatchClick(const sf::Event& e) {
     root.defaultOnClick(mouse_position / Conf::GUI_SCALE, e.mouseButton.button);
   }
 
-  void unclick(const sf::Event& e) {
-    root.defaultOnUnclick(e.mouseButton.button);
-  }
+  void unclick(const sf::Event& e) { root.defaultOnUnclick(e.mouseButton.button); }
 
   void update() {
     processEvents();

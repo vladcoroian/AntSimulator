@@ -15,9 +15,7 @@ struct World {
   WorldRenderer renderer;
 
   World(uint32_t width, uint32_t height)
-      : map(width, height, 4),
-        size(to<float>(width), to<float>(height)),
-        renderer(map, va_map) {
+      : map(width, height, 4), size(to<float>(width), to<float>(height)), renderer(map, va_map) {
     // Create walls around the map
     for (int32_t x(0); x < map.width; x++) {
       for (int32_t y(0); y < map.height; y++) {
@@ -41,11 +39,10 @@ struct World {
     }
   }
 
-
   void update(float dt) { map.update(dt); }
 
-  void addMarker(sf::Vector2f pos, Mode type, float intensity,
-                 uint8_t colony_id, bool permanent = false) {
+  void addMarker(sf::Vector2f pos, Mode type, float intensity, uint8_t colony_id,
+                 bool permanent = false) {
     map.addMarker(pos, type, intensity, colony_id, permanent);
   }
 
@@ -89,8 +86,7 @@ struct World {
   }
 
   void addFoodAt(float x, float y, uint32_t quantity) {
-    addFoodAt(sf::Vector2i{to<int32_t>(x) / map.cell_size,
-                           to<int32_t>(y) / map.cell_size},
+    addFoodAt(sf::Vector2i{to<int32_t>(x) / map.cell_size, to<int32_t>(y) / map.cell_size},
               quantity);
   }
 
@@ -115,7 +111,6 @@ struct World {
     cell.repellent = 0.0f;
     cell.permanent = false;
   }
-
 
   void fillWithWalls() {
     for (int32_t x(0); x < map.width; x++) {

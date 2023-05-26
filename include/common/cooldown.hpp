@@ -23,9 +23,7 @@ struct Cooldown {
 
   bool ready() const { return value >= target; }
 
-  bool readyNext(float dt) const {
-    return value < target && value + dt >= target;
-  }
+  bool readyNext(float dt) const { return value < target && value + dt >= target; }
 
   float getRatio() const { return value / target; }
 

@@ -97,16 +97,13 @@ class Transition {
 
   void autoUpdate() const {
     const ChronoPoint now(std::chrono::steady_clock::now());
-    const uint64_t dt(std::chrono::duration_cast<std::chrono::milliseconds>(
-                          now - m_last_access)
-                          .count());
+    const uint64_t dt(
+        std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_access).count());
 
     if (dt > 2) {
       m_last_access = now;
       const uint32_t t(static_cast<uint32_t>(
-          std::chrono::duration_cast<std::chrono::milliseconds>(now -
-                                                                m_start_time)
-              .count()));
+          std::chrono::duration_cast<std::chrono::milliseconds>(now - m_start_time).count()));
       if (t > 1) {
         m_current_value = m_start_value + m_delta * ratio(t * 0.001f * m_speed);
       }

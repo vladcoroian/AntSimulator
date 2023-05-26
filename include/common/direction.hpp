@@ -7,9 +7,7 @@ struct Direction {
   Direction() : m_angle(0.0f), m_target_angle(0.0f), m_rotation_speed(0.0f) {}
 
   Direction(float angle, float rotation_speed = 10.0f)
-      : m_angle(angle),
-        m_target_angle(angle),
-        m_rotation_speed(rotation_speed) {
+      : m_angle(angle), m_target_angle(angle), m_rotation_speed(rotation_speed) {
     updateVec();
     m_target_vec = m_vec;
   }

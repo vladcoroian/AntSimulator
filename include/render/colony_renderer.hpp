@@ -21,8 +21,7 @@ struct PopulationChart {
   int32_t pop_diff = 0;
 
   PopulationChart()
-      : population(800, sf::Vector2f(800.0f, 100.0f), sf::Vector2f()),
-        population_update(3.0f) {
+      : population(800, sf::Vector2f(800.0f, 100.0f), sf::Vector2f()), population_update(3.0f) {
     font.loadFromFile("res/font.ttf");
     text.setFont(font);
   }
@@ -60,8 +59,7 @@ struct PopulationChart {
     text.setCharacterSize(20);
     text.setFillColor(sf::Color::White);
     text.setPosition(position.x + padding, position.y);
-    text.setString("Population " + toStr(ants_count) + "/" +
-                   toStr(soldiers_count));
+    text.setString("Population " + toStr(ants_count) + "/" + toStr(soldiers_count));
     target.draw(text);
 
     text.setCharacterSize(14);
@@ -118,11 +116,9 @@ struct ColonyRenderer {
     const float margin = 10.0f;
     const sf::Vector2f size(400.0f, 100.0f);
     const float colonies_count = 2.0f;
-    const float start_x = (Conf::WIN_WIDTH - size.x * colonies_count -
-                           (colonies_count - 1.0f) * margin) *
-                          0.5f;
-    population.configure({start_x + (size.x + margin) * colony_ref->id, margin},
-                         size);
+    const float start_x =
+        (Conf::WIN_WIDTH - size.x * colonies_count - (colonies_count - 1.0f) * margin) * 0.5f;
+    population.configure({start_x + (size.x + margin) * colony_ref->id, margin}, size);
     population.population.color = colony_ref->ants_color;
   }
 
@@ -191,8 +187,7 @@ struct ColonyRenderer {
     circle.setFillColor(colony.ants_color);
     target.draw(circle, states);
 
-    CircularGauge food_gauge(colony.base.position, 12.0f, 17.0f,
-                             sf::Color::White);
+    CircularGauge food_gauge(colony.base.position, 12.0f, 17.0f, sf::Color::White);
     food_gauge.max_value = colony.base.max_food;
     food_gauge.current_value = colony.base.food;
     food_gauge.render(target, states);

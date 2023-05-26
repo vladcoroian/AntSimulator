@@ -105,12 +105,9 @@ class Blur {
     m_vertical.setUniform("HEIGHT", static_cast<float>(m_render_size.y));
   }
 
-  void clear(uint32_t texture_id) {
-    m_textures[texture_id].clear(sf::Color::Black);
-  }
+  void clear(uint32_t texture_id) { m_textures[texture_id].clear(sf::Color::Black); }
 
-  void draw(const sf::Sprite& sprite, uint32_t dest_buffer,
-            const sf::Shader& shader) {
+  void draw(const sf::Sprite& sprite, uint32_t dest_buffer, const sf::Shader& shader) {
     clear(dest_buffer);
     m_textures[dest_buffer].draw(sprite, &shader);
   }

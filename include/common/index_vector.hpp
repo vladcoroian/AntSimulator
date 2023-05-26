@@ -280,9 +280,7 @@ struct Ref {
 
   civ::ID getID() const { return id; }
 
-  explicit operator bool() const {
-    return array && array->isValid(id, validity_id);
-  }
+  explicit operator bool() const { return array && array->isValid(id, validity_id); }
 
  private:
   ID id;
@@ -294,15 +292,11 @@ template <typename T>
 struct PRef {
   using ProviderCallback = T* (*)(ID, GenericProvider*);
 
-  PRef()
-      : id(0), provider_callback(nullptr), provider(nullptr), validity_id(0) {}
+  PRef() : id(0), provider_callback(nullptr), provider(nullptr), validity_id(0) {}
 
   template <typename U>
   PRef(ID index, Vector<U>& a, ID vid)
-      : id(index),
-        provider_callback{PRef<T>::get<U>},
-        provider(&a),
-        validity_id(vid) {}
+      : id(index), provider_callback{PRef<T>::get<U>}, provider(&a), validity_id(vid) {}
 
   template <typename U>
   PRef(const PRef<U>& other)
@@ -324,9 +318,7 @@ struct PRef {
 
   civ::ID getID() const { return id; }
 
-  explicit operator bool() const {
-    return provider && provider->isValid(id, validity_id);
-  }
+  explicit operator bool() const { return provider && provider->isValid(id, validity_id); }
 
  private:
   ID id;

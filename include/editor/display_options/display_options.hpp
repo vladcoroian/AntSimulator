@@ -12,8 +12,7 @@ struct DisplayOption : public GUI::NamedContainer {
   bool draw_density = false;
 
   explicit DisplayOption(ControlState& control_state_)
-      : GUI::NamedContainer("Display Options",
-                            GUI::Container::Orientation::Horizontal),
+      : GUI::NamedContainer("Display Options", GUI::Container::Orientation::Horizontal),
         control_state(control_state_) {
     size_type.y = GUI::Size::FitContent;
     auto ants = create<GUI::NamedToggle>("Draw Ants");

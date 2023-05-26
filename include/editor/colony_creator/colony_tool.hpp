@@ -31,15 +31,13 @@ struct ColonyTool : GUI::Container {
     top_zone->padding = 0.0f;
     this->addItem(top_zone);
 
-    auto color_button =
-        create<GUI::Button>("", [this]() { this->createColorPicker(); });
+    auto color_button = create<GUI::Button>("", [this]() { this->createColorPicker(); });
     color_button->setHeight(30.0f);
     color_button->setWidth(30.0f);
     top_zone->addItem(color_button, "colony_color_button");
 
-    auto to_focus_button = create<GUI::Button>("Focus", [this]() {
-      control_state.requestFocus(colony->base.position, 2.0f);
-    });
+    auto to_focus_button = create<GUI::Button>(
+        "Focus", [this]() { control_state.requestFocus(colony->base.position, 2.0f); });
     to_focus_button->setHeight(20.0f);
     to_focus_button->setWidth(40.0f);
     top_zone->addItem(to_focus_button);
@@ -57,8 +55,7 @@ struct ColonyTool : GUI::Container {
         target.draw(c, vp_handler.getRenderState());
       };
       control_state.view_action = [this](sf::Vector2f world_position) {
-        const sf::FloatRect bounds = {{0.0f, 0.0f},
-                                      control_state.simulation.world.size};
+        const sf::FloatRect bounds = {{0.0f, 0.0f}, control_state.simulation.world.size};
         if (bounds.contains(world_position)) {
           colony->setPosition(world_position);
           control_state.draw_action = nullptr;
@@ -98,13 +95,10 @@ struct ColonyTool : GUI::Container {
     colony_stats = create<ColonyStats>(colony, control_state);
   }
 
-  void onClick(sf::Vector2f, sf::Mouse::Button) override {
-    on_select(colony->id);
-  }
+  void onClick(sf::Vector2f, sf::Mouse::Button) override { on_select(colony->id); }
 
   void setColor(sf::Color new_color) {
-    top_zone->getByName<GUI::Button>("colony_color_button")->background_color =
-        new_color;
+    top_zone->getByName<GUI::Button>("colony_color_button")->background_color = new_color;
     colony->setColor(new_color);
   }
 
@@ -121,8 +115,7 @@ struct ColonyTool : GUI::Container {
   void render(sf::RenderTarget& target) override {
     auto background = GUI::RoundedRectangle(size, position, 5.0f);
     const uint8_t select = selected ? 30 : 0;
-    background.setFillColor(sf::Color(background_color.r - select,
-                                      background_color.g - select,
+    background.setFillColor(sf::Color(background_color.r - select, background_color.g - select,
                                       background_color.b - select));
     GUI::Item::draw(target, background);
   }

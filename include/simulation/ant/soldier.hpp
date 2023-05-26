@@ -24,14 +24,12 @@ struct SoldierUpdater {
     // Sample the world
     for (uint32_t i(sample_count); i--;) {
       // Get random point in range
-      const float sample_angle =
-          current_angle + RNGf::getRange(sample_angle_range);
+      const float sample_angle = current_angle + RNGf::getRange(sample_angle_range);
       const float distance = RNGf::getUnder(ant.marker_detection_max_dist);
       const sf::Vector2f to_marker = {cos(sample_angle), sin(sample_angle)};
       auto* cell = world.map.getSafe(ant.position + distance * to_marker);
       // This is to ensure that the sampled cell is not behind a wall
-      const HitPoint hit_result =
-          world.map.getFirstHit(ant.position, to_marker, distance);
+      const HitPoint hit_result = world.map.getFirstHit(ant.position, to_marker, distance);
       // Check cell
       if (!cell || hit_result.cell) {
         continue;
@@ -59,8 +57,7 @@ struct SoldierUpdater {
       }
       // Check for the most intense marker
       const float marker_intensity =
-          to<float>(cell->getIntensity(marker_phase, ant.col_id) *
-                    std::pow(cell->wall_dist, 2.0));
+          to<float>(cell->getIntensity(marker_phase, ant.col_id) * std::pow(cell->wall_dist, 2.0));
       if (marker_intensity > result.max_intensity) {
         result.max_intensity = marker_intensity;
         result.max_direction = to_marker;

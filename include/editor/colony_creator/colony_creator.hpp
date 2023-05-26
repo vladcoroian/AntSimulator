@@ -17,8 +17,7 @@ struct ColonyCreator : public GUI::NamedContainer {
         simulation(sim),
         control_state(control_state_) {
     root->size_type.y = GUI::Size::FitContent;
-    auto add_button =
-        create<GUI::Button>("Add", [this]() { this->createColony(); });
+    auto add_button = create<GUI::Button>("Add", [this]() { this->createColony(); });
     add_button->setWidth(32.0f, GUI::Size::Fixed);
     add_button->setHeight(20.0f, GUI::Size::Fixed);
     header->addItem(create<GUI::EmptyItem>());
@@ -35,12 +34,12 @@ struct ColonyCreator : public GUI::NamedContainer {
       ++this->colonies_count;
 
       // Set the correct callback for the remove button
-      colony_tool->top_zone->getByName<GUI::Button>("remove")->click_callback =
-          [this, colony_tool]() {
-            simulation.removeColony(colony_tool->colony->id);
-            this->removeItem(colony_tool);
-            --this->colonies_count;
-          };
+      colony_tool->top_zone->getByName<GUI::Button>("remove")->click_callback = [this,
+                                                                                 colony_tool]() {
+        simulation.removeColony(colony_tool->colony->id);
+        this->removeItem(colony_tool);
+        --this->colonies_count;
+      };
     }
   }
 

@@ -8,8 +8,7 @@ struct FightSystem {
     }
   }
 
-  void checkForFights(Colony& colony, civ::Vector<Colony>& colonies,
-                      World& world) {
+  void checkForFights(Colony& colony, civ::Vector<Colony>& colonies, World& world) {
     for (Ant& a : colony.ants) {
       // Check if the ant has an active fight request
       // from markers sampling

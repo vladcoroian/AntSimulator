@@ -66,9 +66,7 @@ struct ViewportHandler {
     setFocus(state.center);
   }
 
-  [[nodiscard]] const sf::RenderStates& getRenderState() const {
-    return state.state;
-  }
+  [[nodiscard]] const sf::RenderStates& getRenderState() const { return state.state; }
 
   void click(sf::Vector2f relative_click_position) {
     state.mouse_position = relative_click_position;
@@ -96,9 +94,7 @@ struct ViewportHandler {
     state.updateState();
   }
 
-  sf::Vector2f getMouseWorldPosition() const {
-    return state.mouse_world_position;
-  }
+  sf::Vector2f getMouseWorldPosition() const { return state.mouse_world_position; }
 
   sf::Vector2f getScreenCoords(sf::Vector2f world_pos) const {
     return state.state.transform.transformPoint(world_pos);

@@ -48,9 +48,8 @@ struct Toggle : public Button {
   void updateTogglePosition(bool instant = false) {
     const float radius = 0.5f * size.y - padding;
     const sf::Vector2f target_position =
-        position + (state
-                        ? sf::Vector2f{size.x - radius - padding, size.y * 0.5f}
-                        : sf::Vector2f{radius + padding, size.y * 0.5f});
+        position + (state ? sf::Vector2f{size.x - radius - padding, size.y * 0.5f}
+                          : sf::Vector2f{radius + padding, size.y * 0.5f});
     if (instant) {
       toggle_position.setValueInstant(target_position);
     } else {
@@ -88,8 +87,7 @@ struct Toggle : public Button {
 struct NamedToggle : public Container {
   SPtr<Toggle> toggle;
 
-  explicit NamedToggle(const std::string& name)
-      : Container(Container::Orientation::Vertical) {
+  explicit NamedToggle(const std::string& name) : Container(Container::Orientation::Vertical) {
     padding = 0.0f;
     size_type.y = Size::FitContent;
     Container::addItem(create<TextLabel>(name, 12));

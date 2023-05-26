@@ -15,14 +15,13 @@ struct ColorSample : public GUI::DefaultButton {
   ;
   float transition_speed = 3.0f;
 
-  ColorSample(sf::Color color_, sf::Vector2f size_ = {},
-              sf::Vector2f position_ = {})
+  ColorSample(sf::Color color_, sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
       : GUI::DefaultButton(size_, position_), color(color_) {
     initializeTransitions();
   }
 
-  ColorSample(sf::Color color_, GUI::ButtonCallBack callback,
-              sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
+  ColorSample(sf::Color color_, GUI::ButtonCallBack callback, sf::Vector2f size_ = {},
+              sf::Vector2f position_ = {})
       : GUI::DefaultButton(callback, size_, position_), color(color_) {
     initializeTransitions();
   }
@@ -42,19 +41,16 @@ struct ColorSample : public GUI::DefaultButton {
   void onMouseOut() override { select_padding = 0.0f; }
 
   void render(sf::RenderTarget& target) override {
-    const sf::Vector2f current_padding =
-        sf::Vector2f(select_padding, select_padding);
+    const sf::Vector2f current_padding = sf::Vector2f(select_padding, select_padding);
     const sf::Vector2f rect_size = current_size.as<sf::Vector2f>();
     const sf::Vector2f inner_size = rect_size - 2.0f * current_padding;
     const sf::Vector2f position_offset = 0.5f * (size - rect_size);
     const sf::Vector2f inner_offset = 0.5f * (size - inner_size);
     const sf::Vector2f pos = current_position;
 
-    GUI::RoundedRectangle background(rect_size, pos + position_offset,
-                                     angle_radius);
+    GUI::RoundedRectangle background(rect_size, pos + position_offset, angle_radius);
     background.setFillColor(sf::Color::White);
-    GUI::RoundedRectangle color_rect(inner_size, pos + inner_offset,
-                                     angle_radius - select_padding);
+    GUI::RoundedRectangle color_rect(inner_size, pos + inner_offset, angle_radius - select_padding);
     color_rect.setFillColor(color);
     draw(target, background);
     draw(target, color_rect);
@@ -90,8 +86,7 @@ struct ColorButton : public GUI::DefaultButton {
 
   void render(sf::RenderTarget& target) override {
     const float angle_radius = 15.0f;
-    GUI::Item::draw(target,
-                    GUI::RoundedRectangle(size, position, angle_radius));
+    GUI::Item::draw(target, GUI::RoundedRectangle(size, position, angle_radius));
   }
 
   void setColor(sf::Color new_color) { sample->color = new_color; }
@@ -102,12 +97,11 @@ struct ColorSaver : public GUI::Item {
   std::shared_ptr<GUI::GridContainer> grid;
   std::shared_ptr<ColorButton> current_color_add;
 
-  ColorSaver(sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
-      : GUI::Item(size_, position_) {
+  ColorSaver(sf::Vector2f size_ = {}, sf::Vector2f position_ = {}) : GUI::Item(size_, position_) {
     padding = 0.0f;
     grid = create<GUI::GridContainer>(size_, sf::Vector2i(5, 5));
-    current_color_add = create<ColorButton>(
-        "Save", [this]() { addColor(current_color_add->sample->color); });
+    current_color_add =
+        create<ColorButton>("Save", [this]() { addColor(current_color_add->sample->color); });
     // Add items
     addItem(grid);
   }

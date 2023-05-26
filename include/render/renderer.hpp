@@ -11,8 +11,7 @@ struct Renderer {
   ViewportHandler vp_handler;
   civ::Vector<ColonyRenderer> colonies;
 
-  Renderer()
-      : vp_handler({to<float>(Conf::WIN_WIDTH), to<float>(Conf::WIN_HEIGHT)}) {}
+  Renderer() : vp_handler({to<float>(Conf::WIN_WIDTH), to<float>(Conf::WIN_HEIGHT)}) {}
 
   void toggleRenderAnts() { render_ants = !render_ants; }
 

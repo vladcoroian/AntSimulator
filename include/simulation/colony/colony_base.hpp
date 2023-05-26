@@ -15,11 +15,7 @@ struct ColonyBase {
   ColonyBase() : radius(0.0f), food(0.0f), food_acc(0.0f), food_acc_mean(20) {}
 
   ColonyBase(sf::Vector2f position_, float r)
-      : position(position_),
-        radius(r),
-        food(0.0f),
-        food_acc(0.0f),
-        food_acc_mean(200) {}
+      : position(position_), radius(r), food(0.0f), food_acc(0.0f), food_acc_mean(200) {}
 
   void addFood(float quantity) {
     food += quantity;

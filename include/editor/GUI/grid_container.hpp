@@ -9,8 +9,7 @@ struct GridContainer : public Item {
   sf::Vector2i grid_size;
   sf::Vector2f items_size;
 
-  GridContainer(sf::Vector2f size_, sf::Vector2i grid_size_,
-                sf::Vector2f position_ = {})
+  GridContainer(sf::Vector2f size_, sf::Vector2i grid_size_, sf::Vector2f position_ = {})
       : Item(size_, position_), grid_size(grid_size_) {
     spacing = sf::Vector2f(10.0f, 10.0f);
     cursor = sf::Vector2f(padding, padding);
@@ -18,9 +17,8 @@ struct GridContainer : public Item {
   }
 
   void updateItemsSize() {
-    const sf::Vector2f available_size =
-        size - sf::Vector2f(to<float>(grid_size.x - 1) * spacing.x,
-                            to<float>(grid_size.y - 1) * spacing.y);
+    const sf::Vector2f available_size = size - sf::Vector2f(to<float>(grid_size.x - 1) * spacing.x,
+                                                            to<float>(grid_size.y - 1) * spacing.y);
     items_size.x = available_size.x / to<float>(grid_size.x);
     items_size.y = available_size.y / to<float>(grid_size.y);
   }

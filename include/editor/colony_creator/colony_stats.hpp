@@ -55,9 +55,7 @@ struct ColonyStats : public GUI::NamedContainer {
     GUI::NamedContainer::addItem(create<ColonyChart>(colony, control_state));
   }
 
-  void update() override {
-    population_label->setText(toStr(colony->ants.size()));
-  }
+  void update() override { population_label->setText(toStr(colony->ants.size())); }
 
   //    void render(sf::RenderTarget& target) override
   //    {

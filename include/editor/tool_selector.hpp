@@ -11,8 +11,7 @@ struct ToolOption : public GUI::Button {
   trn::Transition<float> select_padding = 0.0f;
   sf::Color color = sf::Color::White;
 
-  ToolOption(const std::string& text, GUI::ButtonCallBack callback)
-      : GUI::Button(text, callback) {
+  ToolOption(const std::string& text, GUI::ButtonCallBack callback) : GUI::Button(text, callback) {
     select_padding.setSpeed(3.0f);
   }
 
@@ -22,8 +21,7 @@ struct ToolOption : public GUI::Button {
 
   void render(sf::RenderTarget& target) override {
     const float tool_angle_radius = 5.0f;
-    const sf::Vector2f current_padding =
-        sf::Vector2f(select_padding, select_padding);
+    const sf::Vector2f current_padding = sf::Vector2f(select_padding, select_padding);
     const sf::Vector2f inner_size = size - 2.0f * current_padding;
     const sf::Vector2f inner_offset = 0.5f * (size - inner_size);
 
@@ -99,17 +97,14 @@ struct ToolSelector : public GUI::NamedContainer {
 
   template <typename TCallback>
   void applyBrush(sf::Vector2f mouse_position, TCallback&& callback) {
-    const auto x =
-        to<int32_t>(mouse_position.x) / simulation.world.map.cell_size;
-    const auto y =
-        to<int32_t>(mouse_position.y) / simulation.world.map.cell_size;
+    const auto x = to<int32_t>(mouse_position.x) / simulation.world.map.cell_size;
+    const auto y = to<int32_t>(mouse_position.y) / simulation.world.map.cell_size;
 
     const int32_t min_x = std::max(1, x - brush_size);
-    const int32_t max_x = std::min(to<int32_t>(simulation.world.map.width - 1),
-                                   x + brush_size + 1);
+    const int32_t max_x = std::min(to<int32_t>(simulation.world.map.width - 1), x + brush_size + 1);
     const int32_t min_y = std::max(1, y - brush_size);
-    const int32_t max_y = std::min(to<int32_t>(simulation.world.map.height - 1),
-                                   y + brush_size + 1);
+    const int32_t max_y =
+        std::min(to<int32_t>(simulation.world.map.height - 1), y + brush_size + 1);
 
     for (int32_t px(min_x); px < max_x; ++px) {
       for (int32_t py(min_y); py < max_y; ++py) {
@@ -155,20 +150,14 @@ struct ToolSelector : public GUI::NamedContainer {
       control_state.draw_action = [this](sf::RenderTarget& target,
                                          const ViewportHandler& vp_handler) {
         const int32_t cell_size = simulation.world.map.cell_size;
-        const float side_size =
-            (2.0f * control_state.brush_radius + 1) * to<float>(cell_size);
+        const float side_size = (2.0f * control_state.brush_radius + 1) * to<float>(cell_size);
         sf::RectangleShape brush_preview({side_size, side_size});
         brush_preview.setFillColor(sf::Color(100, 100, 100, 100));
         brush_preview.setOrigin(side_size * 0.5f, side_size * 0.5f);
-        const sf::Vector2f current_position =
-            vp_handler.getMouseWorldPosition();
+        const sf::Vector2f current_position = vp_handler.getMouseWorldPosition();
         brush_preview.setPosition(
-            to<float>(int(current_position.x / to<float>(cell_size)) *
-                      cell_size) +
-                2.0f,
-            to<float>(int(current_position.y / to<float>(cell_size)) *
-                      cell_size) +
-                2.0f);
+            to<float>(int(current_position.x / to<float>(cell_size)) * cell_size) + 2.0f,
+            to<float>(int(current_position.y / to<float>(cell_size)) * cell_size) + 2.0f);
         target.draw(brush_preview, vp_handler.getRenderState());
       };
     }

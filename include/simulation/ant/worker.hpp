@@ -21,8 +21,7 @@ struct WorkerUpdater {
       const float distance = RNGf::getUnder(Ant::marker_detection_max_dist);
       const sf::Vector2f to_marker = {cos(sample_angle), sin(sample_angle)};
       auto* cell = world.map.getSafe(ant.position + distance * to_marker);
-      const HitPoint hit_result =
-          world.map.getFirstHit(ant.position, to_marker, distance);
+      const HitPoint hit_result = world.map.getFirstHit(ant.position, to_marker, distance);
       // Check cell
       if (!cell || hit_result.cell) {
         continue;
@@ -71,11 +70,9 @@ struct WorkerUpdater {
       return;
     }
     // Check for repellent
-    if (ant.phase == Mode::ToFood && result.max_repellent &&
-        !result.found_permanent) {
+    if (ant.phase == Mode::ToFood && result.max_repellent && !result.found_permanent) {
       if (RNGf::proba(repellent_prob_factor *
-                      (1.0f - result.max_intensity /
-                                  to<float>(Conf::MARKER_INTENSITY)))) {
+                      (1.0f - result.max_intensity / to<float>(Conf::MARKER_INTENSITY)))) {
         ant.direction.addNow(RNGf::getUnder(2.0f * PI));
         // This cooldown prevent from searching markers when fleeing
         ant.search_markers.reset();

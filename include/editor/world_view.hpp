@@ -12,24 +12,18 @@ struct WorldView : GUI::Item {
   TimeController::State current_time_state = TimeController::State::Pause;
   bool action_button_click = false;
 
-  explicit WorldView(sf::Vector2f size_, Simulation& simulation_,
-                     ControlState& control_state_)
-      : GUI::Item(size_),
-        simulation(simulation_),
-        control_state(control_state_) {
+  explicit WorldView(sf::Vector2f size_, Simulation& simulation_, ControlState& control_state_)
+      : GUI::Item(size_), simulation(simulation_), control_state(control_state_) {
     simulation.renderer.vp_handler.reset();
-    control_state.focus.setValueInstant(
-        simulation.renderer.vp_handler.state.offset);
-    control_state.zoom.setValueInstant(
-        simulation.renderer.vp_handler.state.zoom);
+    control_state.focus.setValueInstant(simulation.renderer.vp_handler.state.offset);
+    control_state.zoom.setValueInstant(simulation.renderer.vp_handler.state.zoom);
   }
 
   void initializeEventCallbacks() override {
     addEventCallback(sf::Event::MouseWheelScrolled, [&](sfev::CstEv e) {
       simulation.renderer.vp_handler.wheelZoom(e.mouseWheelScroll.delta);
       control_state.focus_requested = false;
-      control_state.zoom.setValueInstant(
-          simulation.renderer.vp_handler.state.zoom);
+      control_state.zoom.setValueInstant(simulation.renderer.vp_handler.state.zoom);
     });
     addKeyPressedCallback(sf::Keyboard::R, [&](sfev::CstEv) {
       control_state.focus_requested = true;
@@ -38,16 +32,13 @@ struct WorldView : GUI::Item {
     });
   }
 
-  void onClick(sf::Vector2f relative_click_position,
-               sf::Mouse::Button button) override {
+  void onClick(sf::Vector2f relative_click_position, sf::Mouse::Button button) override {
     if (button == sf::Mouse::Left) {
       control_state.focus_requested = false;
-      simulation.renderer.vp_handler.click(relative_click_position *
-                                           Conf::GUI_SCALE);
+      simulation.renderer.vp_handler.click(relative_click_position * Conf::GUI_SCALE);
     } else if (button == sf::Mouse::Right) {
       action_button_click = true;
-      control_state.executeViewAction(
-          simulation.renderer.vp_handler.getMouseWorldPosition());
+      control_state.executeViewAction(simulation.renderer.vp_handler.getMouseWorldPosition());
     } else if (button == sf::Mouse::Middle) {
       control_state.resetCallbacks();
       control_state.requestEditModeOff();
@@ -58,8 +49,7 @@ struct WorldView : GUI::Item {
     if (button == sf::Mouse::Left) {
       simulation.renderer.vp_handler.unclick();
       control_state.focus_requested = false;
-      control_state.focus.setValueInstant(
-          simulation.renderer.vp_handler.state.offset);
+      control_state.focus.setValueInstant(simulation.renderer.vp_handler.state.offset);
     } else if (button == sf::Mouse::Button::Right) {
       action_button_click = false;
       control_state.executeViewActionEnd();
@@ -67,11 +57,9 @@ struct WorldView : GUI::Item {
   }
 
   void onMouseMove(sf::Vector2f new_mouse_position) override {
-    simulation.renderer.vp_handler.setMousePosition(new_mouse_position *
-                                                    Conf::GUI_SCALE);
+    simulation.renderer.vp_handler.setMousePosition(new_mouse_position * Conf::GUI_SCALE);
     if (action_button_click) {
-      control_state.executeViewAction(
-          simulation.renderer.vp_handler.getMouseWorldPosition());
+      control_state.executeViewAction(simulation.renderer.vp_handler.getMouseWorldPosition());
     }
   }
 

@@ -8,8 +8,7 @@ struct SetColorButton : GUI::DefaultButton {
   float angle_radius = 10.0f;
   SPtr<GUI::TextLabel> label;
 
-  SetColorButton(const std::string& text, GUI::ButtonCallBack callback)
-      : DefaultButton(callback) {
+  SetColorButton(const std::string& text, GUI::ButtonCallBack callback) : DefaultButton(callback) {
     label = create<GUI::TextLabel>(text, 32);
     label->catch_event = false;
     addItem(label);

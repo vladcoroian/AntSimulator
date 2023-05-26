@@ -16,14 +16,12 @@ struct WorldRenderer : public AsyncRenderer {
 
   const float offset = 32.0f;
   const float intensity_factor = 255.0f / to<float>(Conf::MARKER_INTENSITY);
-  const sf::Vector3f to_home_color = {
-      to<float>(Conf::TO_HOME_COLOR.r) / 255.0f,
-      to<float>(Conf::TO_HOME_COLOR.g) / 255.0f,
-      to<float>(Conf::TO_HOME_COLOR.b) / 255.0f};
-  const sf::Vector3f to_food_color = {
-      to<float>(Conf::TO_FOOD_COLOR.r) / 255.0f,
-      to<float>(Conf::TO_FOOD_COLOR.g) / 255.0f,
-      to<float>(Conf::TO_FOOD_COLOR.b) / 255.0f};
+  const sf::Vector3f to_home_color = {to<float>(Conf::TO_HOME_COLOR.r) / 255.0f,
+                                      to<float>(Conf::TO_HOME_COLOR.g) / 255.0f,
+                                      to<float>(Conf::TO_HOME_COLOR.b) / 255.0f};
+  const sf::Vector3f to_food_color = {to<float>(Conf::TO_FOOD_COLOR.r) / 255.0f,
+                                      to<float>(Conf::TO_FOOD_COLOR.g) / 255.0f,
+                                      to<float>(Conf::TO_FOOD_COLOR.b) / 255.0f};
 
   civ::Vector<sf::Color> colonies_color;
 
@@ -43,8 +41,7 @@ struct WorldRenderer : public AsyncRenderer {
         const sf::Vector2f position(x * cell_size - eps, y * cell_size - eps);
         va[4 * i + 0].position = position;
         va[4 * i + 1].position = position + sf::Vector2f(cell_size_eps, 0.0f);
-        va[4 * i + 2].position =
-            position + sf::Vector2f(cell_size_eps, cell_size_eps);
+        va[4 * i + 2].position = position + sf::Vector2f(cell_size_eps, cell_size_eps);
         va[4 * i + 3].position = position + sf::Vector2f(0.0f, cell_size_eps);
         ++i;
       }
@@ -73,25 +70,18 @@ struct WorldRenderer : public AsyncRenderer {
         } else if (cell.food) {
           color = sf::Color(0, to<uint8_t>(std::min(255u, 100 + cell.food)), 0);
           const float food_offset = 1.0f;
-          va[4 * i + 0].texCoords =
-              sf::Vector2f(100.0f + food_offset, food_offset);
-          va[4 * i + 1].texCoords =
-              sf::Vector2f(200.0f - food_offset, food_offset);
-          va[4 * i + 2].texCoords =
-              sf::Vector2f(200.0f - food_offset, 100.0f - food_offset);
-          va[4 * i + 3].texCoords =
-              sf::Vector2f(100.0f + food_offset, 100.0f - food_offset);
+          va[4 * i + 0].texCoords = sf::Vector2f(100.0f + food_offset, food_offset);
+          va[4 * i + 1].texCoords = sf::Vector2f(200.0f - food_offset, food_offset);
+          va[4 * i + 2].texCoords = sf::Vector2f(200.0f - food_offset, 100.0f - food_offset);
+          va[4 * i + 3].texCoords = sf::Vector2f(100.0f + food_offset, 100.0f - food_offset);
         } else if (cell.wall) {
           const sf::Color base = Conf::WALL_COLOR;
-          const float ratio = 2.0f;// std::min(2.0f, 0.5f + cell.wall_dist);
-          color = vec3ToColor(
-              sf::Vector3f(base.r * ratio, base.g * ratio, base.b * ratio));
+          const float ratio = 2.0f;  // std::min(2.0f, 0.5f + cell.wall_dist);
+          color = vec3ToColor(sf::Vector3f(base.r * ratio, base.g * ratio, base.b * ratio));
           va[4 * i + 0].texCoords = sf::Vector2f(200.0f + offset, offset);
           va[4 * i + 1].texCoords = sf::Vector2f(300.0f - offset, offset);
-          va[4 * i + 2].texCoords =
-              sf::Vector2f(300.0f - offset, 100.0f - offset);
-          va[4 * i + 3].texCoords =
-              sf::Vector2f(200.0f + offset, 100.0f - offset);
+          va[4 * i + 2].texCoords = sf::Vector2f(300.0f - offset, 100.0f - offset);
+          va[4 * i + 3].texCoords = sf::Vector2f(200.0f + offset, 100.0f - offset);
         }
         va[4 * i + 0].color = color;
         va[4 * i + 1].color = color;
@@ -106,8 +96,7 @@ struct WorldRenderer : public AsyncRenderer {
   void drawToEnemy(uint64_t i, const ColonyCell& cell, sf::VertexArray& va,
                    sf::Color& color) const {
     const sf::Vector3f to_enemies_color(255.0f, 0.0f, 255.0f);
-    const sf::Vector3f intensity_color =
-        intensity_factor * to_enemies_color * cell.intensity[2];
+    const sf::Vector3f intensity_color = intensity_factor * to_enemies_color * cell.intensity[2];
     color = vec3ToColor(intensity_color);
     va[4 * i + 0].texCoords = sf::Vector2f(offset, offset);
     va[4 * i + 1].texCoords = sf::Vector2f(100.0f - offset, offset);
@@ -124,10 +113,8 @@ struct WorldRenderer : public AsyncRenderer {
       va[4 * i + 2].texCoords = sf::Vector2f(100.0f - offset, 100.0f - offset);
       va[4 * i + 3].texCoords = sf::Vector2f(offset, 100.0f - offset);
     } else {
-      const sf::Vector3f intensity_1_color =
-          intensity_factor * to_home_color * cell.intensity[0];
-      const sf::Vector3f intensity_2_color =
-          intensity_factor * to_food_color * cell.intensity[1];
+      const sf::Vector3f intensity_1_color = intensity_factor * to_home_color * cell.intensity[0];
+      const sf::Vector3f intensity_2_color = intensity_factor * to_food_color * cell.intensity[1];
       const sf::Vector3f mixed_color(intensity_1_color.x + intensity_2_color.x,
                                      intensity_1_color.y + intensity_2_color.y,
                                      intensity_1_color.z + intensity_2_color.z);
@@ -139,8 +126,7 @@ struct WorldRenderer : public AsyncRenderer {
     }
   }
 
-  void drawDensityOne(uint64_t i, const WorldCell& cell, sf::VertexArray& va,
-                      sf::Color& color) {
+  void drawDensityOne(uint64_t i, const WorldCell& cell, sf::VertexArray& va, sf::Color& color) {
     const sf::Color c_color = colonies_color[selected_colony];
     const float ratio = cell.density;
     color = vec3ToColor(sf::Vector3f{4.0f * ratio, ratio, ratio});

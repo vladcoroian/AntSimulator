@@ -6,10 +6,9 @@
 struct ColorUtils {
   template <typename T>
   static sf::Color createColor(T r, T g, T b) {
-    return sf::Color{
-        std::min(uint8_t{255}, std::max(uint8_t{0}, to<uint8_t>(r))),
-        std::min(uint8_t{255}, std::max(uint8_t{0}, to<uint8_t>(g))),
-        std::min(uint8_t{255}, std::max(uint8_t{0}, to<uint8_t>(b)))};
+    return sf::Color{std::min(uint8_t{255}, std::max(uint8_t{0}, to<uint8_t>(r))),
+                     std::min(uint8_t{255}, std::max(uint8_t{0}, to<uint8_t>(g))),
+                     std::min(uint8_t{255}, std::max(uint8_t{0}, to<uint8_t>(b)))};
   }
 
   static sf::Color getRainbow(float t) {
@@ -20,8 +19,7 @@ struct ColorUtils {
   }
 
   static sf::Color getRandomColor() {
-    return createColor(RNGf::getUnder(255.0f), RNGf::getUnder(255.0f),
-                       RNGf::getUnder(255.0f));
+    return createColor(RNGf::getUnder(255.0f), RNGf::getUnder(255.0f), RNGf::getUnder(255.0f));
   }
 
   static sf::Color getDesaturated(sf::Color color, float ratio) {

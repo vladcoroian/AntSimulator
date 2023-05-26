@@ -45,8 +45,7 @@ struct EditorScene : public GUI::Scene {
   void initialize() {
     const sf::Vector2u window_size = window.getSize();
 
-    renderer =
-        create<WorldView>(toVector2f(window_size), simulation, control_state);
+    renderer = create<WorldView>(toVector2f(window_size), simulation, control_state);
 
     toolbox = create<Toolbox>(sf::Vector2f{350.0f, to<float>(window_size.y)},
                               sf::Vector2f{root.padding, root.padding});
@@ -56,8 +55,7 @@ struct EditorScene : public GUI::Scene {
     toolbox->addItem(display_controls);
 
     // Add map edition tools
-    auto tools = create<GUI::NamedContainer>(
-        "Edit Map", GUI::Container::Orientation::Vertical);
+    auto tools = create<GUI::NamedContainer>("Edit Map", GUI::Container::Orientation::Vertical);
     tools->header->addItem(create<GUI::EmptyItem>());
     tools->hideRoot();
     tools->root->spacing = 0.0f;
@@ -78,8 +76,8 @@ struct EditorScene : public GUI::Scene {
 
     tool_selector = create<ToolSelector>(control_state, simulation);
     tools->addItem(tool_selector);
-    auto brush_size = create<GUI::NamedContainer>(
-        "Brush Size", GUI::Container::Orientation::Vertical);
+    auto brush_size =
+        create<GUI::NamedContainer>("Brush Size", GUI::Container::Orientation::Vertical);
     auto slider = create<SliderLabel>(10.0f);
     watch(slider, [this, slider]() { setBrushSize(slider->getValue()); });
     setBrushSize(slider->getValue());
@@ -96,8 +94,7 @@ struct EditorScene : public GUI::Scene {
     auto time_controls = create<TimeController>();
     watch(time_controls, [this, time_controls]() {
       this->renderer->current_time_state = time_controls->current_state;
-      this->control_state.updating =
-          time_controls->current_state == TimeController::State::Play;
+      this->control_state.updating = time_controls->current_state == TimeController::State::Play;
       if (time_controls->tool_speed->getState()) {
         this->window.setFramerateLimit(400);
       } else {
@@ -105,9 +102,7 @@ struct EditorScene : public GUI::Scene {
       }
     });
 
-    control_state.request_edits_off = [tools_toggle] {
-      tools_toggle->setState(false);
-    };
+    control_state.request_edits_off = [tools_toggle] { tools_toggle->setState(false); };
 
     addItem(renderer);
     addItem(toolbox, "Toolbox");
@@ -116,10 +111,8 @@ struct EditorScene : public GUI::Scene {
 
   void updateRenderOptions() const {
     renderer->simulation.renderer.render_ants = display_controls->draw_ants;
-    renderer->simulation.world.renderer.draw_markers =
-        display_controls->draw_markers;
-    renderer->simulation.world.renderer.draw_density =
-        display_controls->draw_density;
+    renderer->simulation.world.renderer.draw_markers = display_controls->draw_markers;
+    renderer->simulation.world.renderer.draw_density = display_controls->draw_density;
   }
 
   void setBrushSize(float size) {
@@ -130,8 +123,7 @@ struct EditorScene : public GUI::Scene {
 
   void onSizeChange() override {
     renderer->size = root.size;
-    renderer->simulation.renderer.vp_handler.state.center =
-        root.size * 0.5f * Conf::GUI_SCALE;
+    renderer->simulation.renderer.vp_handler.state.center = root.size * 0.5f * Conf::GUI_SCALE;
     // This is to update mouse_position
     simulation.renderer.vp_handler.wheelZoom(0);
   }

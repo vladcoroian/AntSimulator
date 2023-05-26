@@ -18,9 +18,7 @@ struct Slider : public GUI::Item {
     padding = 3.0f;
   }
 
-  float getValue() const {
-    return min_value + (max_value - min_value) * current_ratio;
-  }
+  float getValue() const { return min_value + (max_value - min_value) * current_ratio; }
 
   void setCursorPosition(float x) {
     const float width = size.x - 2.0f * padding;
@@ -54,9 +52,7 @@ struct Slider : public GUI::Item {
     cursor.setOrigin(cursor_radius, cursor_radius);
     cursor.setOutlineThickness(2.0f);
     cursor.setOutlineColor(color);
-    cursor.setPosition(
-        position +
-        sf::Vector2f(padding + bar_width * current_ratio, size.y * 0.5f));
+    cursor.setPosition(position + sf::Vector2f(padding + bar_width * current_ratio, size.y * 0.5f));
     // Draw things
     draw(target, bar);
     draw(target, cursor);
@@ -67,10 +63,9 @@ struct SliderLabel : public GUI::Container {
   SPtr<Slider> slider;
   SPtr<GUI::TextLabel> label;
 
-  SliderLabel(float max_value_, float min_value_ = 0.0f,
-              sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
-      : GUI::Container(GUI::Container::Orientation::Horizontal, size_,
-                       position_) {
+  SliderLabel(float max_value_, float min_value_ = 0.0f, sf::Vector2f size_ = {},
+              sf::Vector2f position_ = {})
+      : GUI::Container(GUI::Container::Orientation::Horizontal, size_, position_) {
     size_type.y = GUI::Size::FitContent;
 
     slider = create<Slider>(max_value_, min_value_);

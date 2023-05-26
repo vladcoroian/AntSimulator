@@ -21,17 +21,12 @@ struct Container : public Item {
 
   sf::Color color;
 
-  Container(Orientation orientation_, sf::Vector2f size_ = {},
-            sf::Vector2f position_ = {})
+  Container(Orientation orientation_, sf::Vector2f size_ = {}, sf::Vector2f position_ = {})
       : Item(size_, position_), orientation(orientation_) {
-    coord_1_accessor =
-        (orientation == Orientation::Horizontal) ? getX<float> : getY<float>;
-    coord_2_accessor =
-        (orientation == Orientation::Horizontal) ? getY<float> : getX<float>;
-    size_type_coord_1_accessor =
-        (orientation == Orientation::Horizontal) ? getX<Size> : getY<Size>;
-    size_type_coord_2_accessor =
-        (orientation == Orientation::Horizontal) ? getY<Size> : getX<Size>;
+    coord_1_accessor = (orientation == Orientation::Horizontal) ? getX<float> : getY<float>;
+    coord_2_accessor = (orientation == Orientation::Horizontal) ? getY<float> : getX<float>;
+    size_type_coord_1_accessor = (orientation == Orientation::Horizontal) ? getX<Size> : getY<Size>;
+    size_type_coord_2_accessor = (orientation == Orientation::Horizontal) ? getY<Size> : getX<Size>;
     padding = 8.0f;
   }
 
@@ -55,13 +50,9 @@ struct Container : public Item {
 
   void onPositionChange() override { updateItems(); }
 
-  Size& getCoord1(sf::Vector2<Size>& v) {
-    return size_type_coord_1_accessor(v);
-  }
+  Size& getCoord1(sf::Vector2<Size>& v) { return size_type_coord_1_accessor(v); }
 
-  Size& getCoord2(sf::Vector2<Size>& v) {
-    return size_type_coord_2_accessor(v);
-  }
+  Size& getCoord2(sf::Vector2<Size>& v) { return size_type_coord_2_accessor(v); }
 
   float& getCoord1(sf::Vector2f& v) { return coord_1_accessor(v); }
 
@@ -94,19 +85,16 @@ struct Container : public Item {
         all_fixed = false;
       }
       item->setPosition(
-          makeVector2(current_pos,
-                      padding + (coord_2_size - getCoord2(item->size)) * 0.5f));
+          makeVector2(current_pos, padding + (coord_2_size - getCoord2(item->size)) * 0.5f));
       item->setSize(new_item_size);
       // Update container state
-      this_coord_2_size = std::max(this_coord_2_size,
-                                   getCoord2(new_item_size) + 2.0f * padding);
+      this_coord_2_size = std::max(this_coord_2_size, getCoord2(new_item_size) + 2.0f * padding);
       current_pos += getCoord1(item->size) + spacing;
     }
     // If needed, resize container
     sf::Vector2f new_size = size;
     if (getCoord1(size_type) == Size::FitContent && all_fixed) {
-      getCoord1(new_size) =
-          current_pos + padding - spacing * to<float>(!sub_items.empty());
+      getCoord1(new_size) = current_pos + padding - spacing * to<float>(!sub_items.empty());
     }
     if (getCoord2(size_type) == Size::FitContent) {
       getCoord2(new_size) = this_coord_2_size;
@@ -121,8 +109,7 @@ struct Container : public Item {
       return {false, 0.0f};
     }
     uint64_t items_auto_count = items_count;
-    float remaining_size =
-        getCoord1(size) - 2.0f * padding * to<float>(items_count > 0);
+    float remaining_size = getCoord1(size) - 2.0f * padding * to<float>(items_count > 0);
     // Check for item size type
     for (ItemPtr item : sub_items) {
       const bool is_fixed = getCoord1(item->size_type) != Size::Auto;

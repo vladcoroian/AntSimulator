@@ -40,13 +40,10 @@ struct Item {
 
   Item() = default;
 
-  explicit Item(sf::Vector2f size_, sf::Vector2f position_ = {},
-                const std::string& name_ = "")
+  explicit Item(sf::Vector2f size_, sf::Vector2f position_ = {}, const std::string& name_ = "")
       : size(size_), position(position_), name(name_) {}
 
-  virtual void onClick(sf::Vector2f, sf::Mouse::Button) {
-    click_caught = false;
-  }
+  virtual void onClick(sf::Vector2f, sf::Mouse::Button) { click_caught = false; }
   virtual void onUnclick(sf::Mouse::Button) {}
   virtual void onMouseMove(sf::Vector2f) {}
   virtual void onSizeChange() {}
@@ -112,8 +109,7 @@ struct Item {
   }
 
   void updateActiveItem() {
-    if (active_item && active_item->clicking &&
-        !need_force_active_item_update) {
+    if (active_item && active_item->clicking && !need_force_active_item_update) {
       return;
     }
     need_force_active_item_update = false;
@@ -143,8 +139,7 @@ struct Item {
     clicking = true;
     // Check for click falls in a sub item
     if (active_item) {
-      active_item->defaultOnClick(
-          getRelativeMousePosition(active_item, mouse_position), button);
+      active_item->defaultOnClick(getRelativeMousePosition(active_item, mouse_position), button);
       if (active_item) {
         if (active_item->click_caught) {
           return;
@@ -171,8 +166,7 @@ struct Item {
     current_mouse_position = mouse_position;
     updateActiveItem();
     if (active_item) {
-      active_item->defaultOnMouseMove(
-          getRelativeMousePosition(active_item, mouse_position));
+      active_item->defaultOnMouseMove(getRelativeMousePosition(active_item, mouse_position));
       return;
     }
     onMouseMove(mouse_position);
@@ -204,9 +198,7 @@ struct Item {
     target.draw(drawable, default_states);
   }
 
-  bool isUnder(sf::Vector2f pos) const {
-    return sf::FloatRect(position, size).contains(pos);
-  }
+  bool isUnder(sf::Vector2f pos) const { return sf::FloatRect(position, size).contains(pos); }
 
   void addItem(ItemPtr item, const std::string& item_name = "",
                Alignment alignment_ = Alignment::None) {
@@ -259,37 +251,30 @@ struct Item {
   }
 
   // Attaches new callback to an event
-  void addEventCallback(sf::Event::EventType type,
-                        sfev::EventCallback callback) {
+  void addEventCallback(sf::Event::EventType type, sfev::EventCallback callback) {
     event_callbacks.addEventCallback(type, callback);
   }
 
   // Removes a callback
-  void removeCallback(sf::Event::EventType type) {
-    event_callbacks.removeCallback(type);
-  }
+  void removeCallback(sf::Event::EventType type) { event_callbacks.removeCallback(type); }
 
   // Adds a key pressed callback
-  void addKeyPressedCallback(sf::Keyboard::Key key,
-                             sfev::EventCallback callback) {
+  void addKeyPressedCallback(sf::Keyboard::Key key, sfev::EventCallback callback) {
     event_callbacks.addKeyPressedCallback(key, callback);
   }
 
   // Adds a key released callback
-  void addKeyReleasedCallback(sf::Keyboard::Key key,
-                              sfev::EventCallback callback) {
+  void addKeyReleasedCallback(sf::Keyboard::Key key, sfev::EventCallback callback) {
     event_callbacks.addKeyReleasedCallback(key, callback);
   }
 
   // Adds a mouse pressed callback
-  void addMousePressedCallback(sf::Mouse::Button button,
-                               sfev::EventCallback callback) {
+  void addMousePressedCallback(sf::Mouse::Button button, sfev::EventCallback callback) {
     event_callbacks.addMousePressedCallback(button, callback);
   }
 
   // Adds a mouse released callback
-  void addMouseReleasedCallback(sf::Mouse::Button button,
-                                sfev::EventCallback callback) {
+  void addMouseReleasedCallback(sf::Mouse::Button button, sfev::EventCallback callback) {
     event_callbacks.addMouseReleasedCallback(button, callback);
   }
 
@@ -302,8 +287,7 @@ struct Item {
     }
   }
 
-  sf::Vector2f getRelativeMousePosition(ItemPtr item,
-                                        sf::Vector2f mouse_position) const {
+  sf::Vector2f getRelativeMousePosition(ItemPtr item, sf::Vector2f mouse_position) const {
     const sf::Vector2f item_size = item->size;
     const sf::Vector2f rel_mouse_position = mouse_position - item->position;
     return sf::Vector2f(clamp(rel_mouse_position.x, 0.0f, item_size.x),
