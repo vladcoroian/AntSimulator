@@ -6,7 +6,7 @@ class NumberGenerator {
   std::random_device rd;
   std::mt19937 gen;
 
-  NumberGenerator() : gen(0) {}
+  NumberGenerator() : gen(20) {}
 };
 
 template <typename T>

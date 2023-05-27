@@ -11,6 +11,7 @@
 namespace edtr {
 
 struct Room {
+  int id;
   sf::Vector2i pos;
   int32_t width;
   int32_t height;
