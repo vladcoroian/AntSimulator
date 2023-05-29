@@ -48,6 +48,17 @@ struct MapGenerator : public GUI::NamedContainer {
                         (int32_t)simulation.world.map.height / 2 + y};
   }
 
+  sf::Vector2i getRandomPointInEllipse(int32_t radius_x, int32_t radius_y, int32_t min_radius = 0) {
+    const double t = 2.0f * M_PI * RNGf::getUnder(1.0f);
+    const double u = RNGf::getUnder(1.0f) + RNGf::getUnder(1.0f);
+    const double r = u > 1.0f ? 2.0f - u : u;
+    const auto roundm = [](float x, int32_t m) { return (int32_t)(m * std::round(x / m)); };
+    const auto x = roundm(radius_x * r * std::cos(t), simulation.world.map.cell_size);
+    const auto y = roundm(radius_y * r * std::sin(t), simulation.world.map.cell_size);
+    return sf::Vector2i{(int32_t)simulation.world.map.width / 2 + x + min_radius,
+                        (int32_t)simulation.world.map.height / 2 + y + min_radius};
+  }
+
   bool anyRoomOverlap(std::vector<Room> rooms) {
     for (const auto& room1 : rooms) {
       for (const auto& room2 : rooms) {
@@ -86,11 +97,14 @@ struct MapGenerator : public GUI::NamedContainer {
   }
 
   std::vector<Room> getRooms() {
-    for (int32_t i(0); i < 80; ++i) {
-      const float radius = RNGf::getUnder(1.0f) * 150.0f;
-      const auto point = getRandomPointInCircle(radius);
-      const int room_width = std::round(RNGf::getUnder(1.0f) * 20.0f + 2.0f) * 2 + 1;
-      const int room_height = std::round(RNGf::getUnder(1.0f) * 20.0f + 2.0f) * 2 + 1;
+    for (int32_t i(0); i < 100; ++i) {
+      const int32_t max_width = 30;
+      const int32_t boundary = 10;
+      const auto point = getRandomPointInEllipse(
+          Conf::WORLD_WIDTH / simulation.world.map.cell_size - 3 * max_width,
+          Conf::WORLD_HEIGHT / simulation.world.map.cell_size - 3 * max_width, max_width);
+      const int room_width = std::round(RNGf::getUnder(1.0f) * max_width + 1.0f) * 2 + 1;
+      const int room_height = std::round(RNGf::getUnder(1.0f) * max_width + 1.0f) * 2 + 1;
       rooms_.push_back({i, point, room_width, room_height});
     }
 
@@ -365,7 +379,7 @@ struct MapGenerator : public GUI::NamedContainer {
         if (in_hallway) {
           continue;
         }
-        if (RNGf::getUnder(1.0f) < 0.3f) {
+        if (RNGf::getUnder(1.0f) < 0.4f) {
           applyBrush(
               sf::Vector2f{RNGf::getUnder(Conf::WORLD_WIDTH), RNGf::getUnder(Conf::WORLD_HEIGHT)},
               [this](int32_t x, int32_t y) {
@@ -375,7 +389,7 @@ struct MapGenerator : public GUI::NamedContainer {
       }
     }
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
       smoothMap();
     }
 
