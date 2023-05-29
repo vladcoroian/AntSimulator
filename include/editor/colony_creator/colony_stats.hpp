@@ -48,7 +48,7 @@ struct ColonyStats : public GUI::NamedContainer {
       : GUI::NamedContainer("Population"), colony(colony_) {
     header->addItem(create<GUI::EmptyItem>());
 
-    population_label = create<GUI::TextLabel>("", 14);
+    population_label = create<GUI::TextLabel>("", 22);
     header->addItem(population_label);
     root->size_type = {GUI::Size::Auto, GUI::Size::Auto};
     setHeight(100.0f);

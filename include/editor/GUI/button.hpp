@@ -28,7 +28,7 @@ struct Button : public DefaultButton {
   sf::Color background_color = sf::Color::White;
 
   Button(const std::string& text, ButtonCallBack callback) : DefaultButton(callback) {
-    label = create<TextLabel>(text, 14);
+    label = create<TextLabel>(text, 24);
     label->catch_event = false;
     addItem(label);
   }

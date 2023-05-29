@@ -29,17 +29,17 @@ struct TimeController : public GUI::NamedContainer {
       select(State::Pause);
     });
     tool_pause->color = {255, 255, 230};
-    tool_pause->setWidth(70.0f);
+    tool_pause->setWidth(100.0f);
 
     tool_play = create<ToolOption>("PLAY", [this]() {
       current_state = State::Play;
       select(State::Play);
     });
     tool_play->color = {230, 255, 230};
-    tool_play->setWidth(70.0f);
+    tool_play->setWidth(100.0f);
 
     tool_speed = create<GUI::NamedToggle>("Full Speed");
-    tool_speed->setWidth(70.0f);
+    tool_speed->setWidth(100.0f);
     watch(tool_speed, [this] { notifyChanged(); });
 
     // Add items

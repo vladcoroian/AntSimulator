@@ -38,8 +38,8 @@ struct ColonyTool : GUI::Container {
 
     auto to_focus_button = create<GUI::Button>(
         "Focus", [this]() { control_state.requestFocus(colony->base.position, 2.0f); });
-    to_focus_button->setHeight(20.0f);
-    to_focus_button->setWidth(40.0f);
+    to_focus_button->setHeight(50.0f);
+    to_focus_button->setWidth(80.0f);
     top_zone->addItem(to_focus_button);
 
     auto set_position_button = create<GUI::Button>("Set Position", [this]() {
@@ -65,13 +65,13 @@ struct ColonyTool : GUI::Container {
         }
       };
     });
-    set_position_button->setHeight(20.0f);
-    set_position_button->setWidth(100.0f);
+    set_position_button->setHeight(50.0f);
+    set_position_button->setWidth(160.0f);
     top_zone->addItem(set_position_button);
 
     auto remove_button = create<GUI::Button>("Remove", []() {});
-    remove_button->setHeight(20.0f);
-    remove_button->setWidth(60.0f);
+    remove_button->setHeight(50.0f);
+    remove_button->setWidth(90.0f);
     remove_button->background_color = sf::Color(250, 200, 200);
     top_zone->addItem(remove_button, "remove");
 

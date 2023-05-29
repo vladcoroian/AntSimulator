@@ -27,9 +27,9 @@ struct NamedContainer : public Container {
     header->spacing = 0.0f;
     header->size_type.y = Size::FitContent;
 
-    label = create<TextLabel>(name, 14);
+    label = create<TextLabel>(name, 24);
     label->setColor(sf::Color(100, 100, 100));
-    label->setHeight(20.0f);
+    label->setHeight(40.0f);
     label->setAlignment(Alignment::Left);
 
     header->addItem(label);

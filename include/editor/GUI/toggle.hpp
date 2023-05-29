@@ -88,9 +88,9 @@ struct NamedToggle : public Container {
   SPtr<Toggle> toggle;
 
   explicit NamedToggle(const std::string& name) : Container(Container::Orientation::Vertical) {
-    padding = 0.0f;
+    padding = 2.0f;
     size_type.y = Size::FitContent;
-    Container::addItem(create<TextLabel>(name, 12));
+    Container::addItem(create<TextLabel>(name, 22));
     toggle = create<Toggle>();
     Container::addItem(toggle);
 

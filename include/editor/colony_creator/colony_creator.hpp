@@ -18,8 +18,8 @@ struct ColonyCreator : public GUI::NamedContainer {
         control_state(control_state_) {
     root->size_type.y = GUI::Size::FitContent;
     auto add_button = create<GUI::Button>("Add", [this]() { this->createColony(); });
-    add_button->setWidth(32.0f, GUI::Size::Fixed);
-    add_button->setHeight(20.0f, GUI::Size::Fixed);
+    add_button->setWidth(50.0f, GUI::Size::Fixed);
+    add_button->setHeight(30.0f, GUI::Size::Fixed);
     header->addItem(create<GUI::EmptyItem>());
     header->addItem(add_button);
   }
