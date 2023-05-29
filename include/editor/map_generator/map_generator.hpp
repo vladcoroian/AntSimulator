@@ -15,7 +15,7 @@ namespace edtr {
 struct MapGenerator : public GUI::NamedContainer {
   Simulation& simulation;
   ControlState& control_state;
-  int32_t brush_size = 1;
+  int32_t brush_size = 5;
   SPtr<ToolOption> generate_button;
   SPtr<ToolOption> reset_map_button;
   std::vector<Room> rooms_;
@@ -86,11 +86,11 @@ struct MapGenerator : public GUI::NamedContainer {
   }
 
   std::vector<Room> getRooms() {
-    for (int32_t i(0); i < 60; ++i) {
+    for (int32_t i(0); i < 80; ++i) {
       const float radius = RNGf::getUnder(1.0f) * 150.0f;
       const auto point = getRandomPointInCircle(radius);
-      const int room_width = std::round(RNGf::getUnder(1.0f) * 20.0f + 5.0f) * 2 + 1;
-      const int room_height = std::round(RNGf::getUnder(1.0f) * 20.0f + 5.0f) * 2 + 1;
+      const int room_width = std::round(RNGf::getUnder(1.0f) * 20.0f + 2.0f) * 2 + 1;
+      const int room_height = std::round(RNGf::getUnder(1.0f) * 20.0f + 2.0f) * 2 + 1;
       rooms_.push_back({i, point, room_width, room_height});
     }
 
@@ -214,7 +214,7 @@ struct MapGenerator : public GUI::NamedContainer {
     }
   }
 
-  void placeHallway(const Room& source, const Room& target) {
+  void placeHallway(const Room& source, const Room& target, std::vector<Room>& hallways) {
     const auto& source_point = source.pos;
     const auto& target_point = target.pos;
     // midpoint between source_point and target_point
@@ -228,11 +228,14 @@ struct MapGenerator : public GUI::NamedContainer {
                              midpoint.x <= target_point.x + target.width / 2;
     const bool y_in_target = midpoint.y >= target_point.y - target.height / 2 &&
                              midpoint.y <= target_point.y + target.height / 2;
+    const int32_t hallways_size = hallways.size();
     if (x_in_source && x_in_target) {
       // create vertical corridor
       const int32_t min_y = std::min(source_point.y, target_point.y);
       const int32_t max_y = std::max(source_point.y, target_point.y);
       for (int32_t y(min_y); y < max_y; ++y) {
+        hallways.push_back({hallways_size, sf::Vector2i{midpoint.x, midpoint.y}, brush_size * 2 + 1,
+                            max_y - min_y + 2});
         applyIntegerBrush(sf::Vector2i{midpoint.x, y}, [this](int32_t x, int32_t y) {
           simulation.world.removeWall(sf::Vector2i{x, y});
         });
@@ -245,6 +248,8 @@ struct MapGenerator : public GUI::NamedContainer {
       const int32_t min_x = std::min(source_point.x, target_point.x);
       const int32_t max_x = std::max(source_point.x, target_point.x);
       for (int32_t x(min_x); x < max_x; ++x) {
+        hallways.push_back({hallways_size, sf::Vector2i{midpoint.x, midpoint.y}, max_x - min_x + 2,
+                            brush_size * 2 + 1});
         applyIntegerBrush(sf::Vector2i{x, midpoint.y}, [this](int32_t x, int32_t y) {
           simulation.world.removeWall(sf::Vector2i{x, y});
         });
@@ -255,30 +260,38 @@ struct MapGenerator : public GUI::NamedContainer {
     // create L-shaped corridor from source_point to target_point
     if (source_point.x < target_point.x) {
       for (int32_t x = source_point.x; x <= target_point.x; ++x) {
+        hallways.push_back({hallways_size,
+                            sf::Vector2i{(source_point.x + target_point.x) / 2, source_point.y},
+                            target_point.x - source_point.x + 2, 2 * brush_size + 1});
         applyIntegerBrush(sf::Vector2i{x, source_point.y}, [this](int32_t x, int32_t y) {
           simulation.world.removeWall(sf::Vector2i{x, y});
         });
       }
-      // I am at (target_point.x, source_point.y) and want to move to (target_point.x,
-      // target_point.y)
+      // Move from (target_point.x, source_point.y) to (target_point.x, target_point.y)
       const int32_t min_y = std::min(source_point.y, target_point.y);
       const int32_t max_y = std::max(source_point.y, target_point.y);
       for (int32_t y(min_y); y < max_y; ++y) {
+        hallways.push_back({hallways_size, sf::Vector2i{target_point.x, (max_y + min_y) / 2},
+                            2 * brush_size + 1, max_y - min_y + 2});
         applyIntegerBrush(sf::Vector2i{target_point.x, y}, [this](int32_t x, int32_t y) {
           simulation.world.removeWall(sf::Vector2i{x, y});
         });
       }
     } else {
       for (int32_t x = target_point.x; x <= source_point.x; ++x) {
+        hallways.push_back({hallways_size,
+                            sf::Vector2i{(source_point.x + target_point.x) / 2, target_point.y},
+                            source_point.x - target_point.x + 2, 2 * brush_size + 1});
         applyIntegerBrush(sf::Vector2i{x, target_point.y}, [this](int32_t x, int32_t y) {
           simulation.world.removeWall(sf::Vector2i{x, y});
         });
       }
-      // I am at (source_point.x, target_point.y) and want to move to (source_point.x,
-      // source_point.y)
+      // Move from (source_point.x, target_point.y) to (source_point.x, source_point.y)
       const int32_t min_y = std::min(source_point.y, target_point.y);
       const int32_t max_y = std::max(source_point.y, target_point.y);
       for (int32_t y = min_y; y < max_y; ++y) {
+        hallways.push_back({hallways_size, sf::Vector2i{source_point.x, (max_y + min_y) / 2},
+                            2 * brush_size + 1, max_y - min_y + 2});
         applyIntegerBrush(sf::Vector2i{source_point.x, y}, [this](int32_t x, int32_t y) {
           simulation.world.removeWall(sf::Vector2i{x, y});
         });
@@ -304,7 +317,7 @@ struct MapGenerator : public GUI::NamedContainer {
     // store rooms bigger than mean in main_room vector
     std::vector<Room> main_rooms;
     for (const auto& room : rooms) {
-      if (room.width > mean_width && room.height > mean_height) {
+      if (room.width > mean_width * 1.1 && room.height > mean_height * 1.1) {
         main_rooms.push_back(room);
       }
     }
@@ -312,40 +325,59 @@ struct MapGenerator : public GUI::NamedContainer {
     std::cout << "Number of rooms: " << main_rooms.size() << std::endl;
     // Delauany triangulation for main rooms and MST
     std::vector<std::tuple<int, int, double>> graph;
-    std::cout << graph.size() << std::endl;
     graph = delaunayTriangulation(main_rooms);
-    std::cout << graph.size() << std::endl;
     std::vector<std::tuple<int, int, double>> mst = min_spanning_tree(graph, rooms.size());
 
-    for (const auto& room : main_rooms) {
-      placeRoom(room);
-    }
-
     // create corridors
+    std::vector<Room> hallways;
     for (const auto& edge : mst) {
       const auto& source = rooms[std::get<0>(edge)];
       const auto& target = rooms[std::get<1>(edge)];
       if (source.isOverlapping(target)) {
         continue;
       }
-      placeHallway(source, target);
+      placeHallway(source, target, hallways);
     }
 
-    // for (int32_t x(1); x < simulation.world.map.width - 1; x += 1) {
-    //   for (int32_t y(1); y < simulation.world.map.height - 1; y += 1) {
-    //     if (RNGf::getUnder(1.0f) < 0.3f) {
-    //       applyBrush(
-    //           sf::Vector2f{RNGf::getUnder(Conf::WORLD_WIDTH),
-    //           RNGf::getUnder(Conf::WORLD_HEIGHT)}, [this](int32_t x, int32_t y) {
-    //             simulation.world.addWall(sf::Vector2i{x, y});
-    //           });
-    //     }
-    //   }
-    // }
+    // check all hallways and if a hallway overlaps with a room, add the room to main_rooms
+    for (const auto& hallway : hallways) {
+      for (const auto& room : rooms) {
+        if (hallway.isOverlapping(room)) {
+          main_rooms.push_back(room);
+        }
+      }
+    }
 
-    // for (int i = 0; i < 5; ++i) {
-    //   smoothMap();
-    // }
+    for (const auto& room : main_rooms) {
+      placeRoom(room);
+    }
+
+    for (int32_t x(1); x < simulation.world.map.width - 1; x += 1) {
+      for (int32_t y(1); y < simulation.world.map.height - 1; y += 1) {
+        // if (x, y) is in a hallway then skip it
+        bool in_hallway = false;
+        for (const auto& hallway : hallways) {
+          if (hallway.isOverlapping({0, sf::Vector2i{x, y}, 1, 1})) {
+            in_hallway = true;
+            break;
+          }
+        }
+        if (in_hallway) {
+          continue;
+        }
+        if (RNGf::getUnder(1.0f) < 0.3f) {
+          applyBrush(
+              sf::Vector2f{RNGf::getUnder(Conf::WORLD_WIDTH), RNGf::getUnder(Conf::WORLD_HEIGHT)},
+              [this](int32_t x, int32_t y) {
+                simulation.world.addWall(sf::Vector2i{x, y});
+              });
+        }
+      }
+    }
+
+    for (int i = 0; i < 5; ++i) {
+      smoothMap();
+    }
 
     simulation.distance_field_builder.requestUpdate();
   }
@@ -354,18 +386,7 @@ struct MapGenerator : public GUI::NamedContainer {
   void applyBrush(sf::Vector2f position, TCallback&& callback) {
     const auto x = to<int32_t>(position.x) / simulation.world.map.cell_size;
     const auto y = to<int32_t>(position.y) / simulation.world.map.cell_size;
-    const int32_t min_x = std::max(1, x - brush_size);
-    const int32_t max_x = std::min(to<int32_t>(simulation.world.map.width - 1), x + brush_size + 1);
-    const int32_t min_y = std::max(1, y - brush_size);
-    const int32_t max_y =
-        std::min(to<int32_t>(simulation.world.map.height - 1), y + brush_size + 1);
-
-    for (int32_t px(min_x); px < max_x; ++px) {
-      for (int32_t py(min_y); py < max_y; ++py) {
-        callback(px, py);
-      }
-    }
-    // callback(x, y);
+    callback(x, y);
   }
 
   template <typename TCallback>
@@ -383,7 +404,6 @@ struct MapGenerator : public GUI::NamedContainer {
         callback(px, py);
       }
     }
-    // callback(x, y);
   }
 };
 
