@@ -11,11 +11,13 @@ struct ColonyCreator : public GUI::NamedContainer {
   ControlState& control_state;
   uint32_t colonies_count = 0;
   int32_t last_selected = -1;
+  float max_autonomy = 300.0f;
 
-  explicit ColonyCreator(Simulation& sim, ControlState& control_state_)
+  explicit ColonyCreator(Simulation& sim, ControlState& control_state_, float max_autonomy_ = 300.0f)
       : GUI::NamedContainer("Colonies", Container::Orientation::Vertical),
         simulation(sim),
-        control_state(control_state_) {
+        control_state(control_state_), 
+        max_autonomy(max_autonomy_) {
     root->size_type.y = GUI::Size::FitContent;
     auto add_button = create<GUI::Button>("Add", [this]() { this->createColony(); });
     add_button->setWidth(50.0f, GUI::Size::Fixed);
@@ -26,7 +28,7 @@ struct ColonyCreator : public GUI::NamedContainer {
 
   void createColony() {
     if (this->colonies_count < Conf::MAX_COLONIES_COUNT) {
-      auto new_colony = simulation.createColony(50.0f, 50.0f);
+      auto new_colony = simulation.createColony(50.0f, 50.0f, max_autonomy);
       auto colony_tool = create<ColonyTool>(new_colony, control_state);
       colony_tool->on_select = [this](int8_t id) { select(id); };
       // Add the new item to this
@@ -57,6 +59,10 @@ struct ColonyCreator : public GUI::NamedContainer {
         tool->selected = tool->colony->id == selected;
       }
     }
+  }
+
+  void setMaxAutonomy(float new_max_autonomy) {
+    max_autonomy = new_max_autonomy;
   }
 };
 

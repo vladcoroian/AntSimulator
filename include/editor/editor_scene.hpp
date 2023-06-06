@@ -84,8 +84,16 @@ struct EditorScene : public GUI::Scene {
     brush_size->addItem(slider);
     tools->addItem(brush_size);
     // Add colonies edition tools
-    auto colonies = create<ColonyCreator>(simulation, control_state);
+    auto autonomy_setter =
+        create<GUI::NamedContainer>("Max Autonomy", GUI::Container::Orientation::Vertical);
+    auto autonomy_slider = create<SliderLabel>(500.0f);
+    autonomy_setter->addItem(autonomy_slider);
+    toolbox->addItem(autonomy_setter);
+    auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
     toolbox->addItem(colonies);
+    watch(autonomy_slider, [this, autonomy_slider, colonies]() {
+      colonies->setMaxAutonomy(autonomy_slider->getValue());
+    });
 
     auto mapGenerator = create<MapGenerator>(simulation, control_state);
     toolbox->addItem(mapGenerator);

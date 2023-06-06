@@ -68,7 +68,7 @@ struct Ant {
   Type type = Type::Worker;
 
   Ant() = default;
-  Ant(float x, float y, float angle, uint8_t colony_id)
+  Ant(float x, float y, float angle, uint8_t colony_id, float max_autonomy = 300.0f)
       : position(x, y),
         direction(angle),
         direction_update(direction_update_period, RNGf::getUnder(1.0f) * direction_update_period),
@@ -79,7 +79,8 @@ struct Ant {
         fight_mode(FightMode::NoFight),
         col_id(colony_id),
         attack_cooldown(1.5f, 0.0f),
-        type(Type::Worker) {}
+        type(Type::Worker),
+        max_autonomy(max_autonomy) {}
 
   void addToWorldGrid(World& world) {
     WorldCell* cell = world.map.getSafe(position);

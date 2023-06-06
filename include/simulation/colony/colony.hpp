@@ -21,16 +21,20 @@ struct Colony {
   uint64_t ant_creation_id = 0;
   bool color_changed = false;
   bool position_changed = false;
+  bool can_create_ants = false;
+  float max_autonomy = 300.0f;
 
   Colony() = default;
 
-  Colony(float x, float y, uint32_t n)
+  Colony(float x, float y, uint32_t n, float max_autonomy = 300.0f, bool can_create_ants = false)
       : base(sf::Vector2f(x, y), 20.0f),
         max_ants_count(n),
         ants_creation_cooldown(0.125f),
         pop_diff_update(1.0f),
         pop_diff(60),
-        id(0) {}
+        id(0),
+        max_autonomy(max_autonomy),
+        can_create_ants(can_create_ants) {}
 
   void initialize(uint8_t colony_id) {
     id = colony_id;
@@ -52,7 +56,7 @@ struct Colony {
   Ant& createWorker() {
     ++ant_creation_id;
     const uint64_t ant_id =
-        ants.emplace_back(base.position.x, base.position.y, RNGf::getUnder(2.0f * PI), id);
+        ants.emplace_back(base.position.x, base.position.y, RNGf::getUnder(2.0f * PI), id, max_autonomy);
     Ant& ant = ants[ant_id];
     ant.id = to<uint16_t>(ant_id);
     ant.type = Ant::Type::Worker;
@@ -83,6 +87,9 @@ struct Colony {
   [[nodiscard]] bool isNotFull() const { return ants.size() < max_ants_count; }
 
   void createNewAnts(float dt) {
+    if (!can_create_ants) {
+      return;
+    }
     const float ant_cost = 4.0f;
     if (ants_creation_cooldown.updateAutoReset(dt) && isNotFull()) {
       if (mustCreateSoldier()) {
