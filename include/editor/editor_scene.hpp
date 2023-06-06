@@ -54,6 +54,28 @@ struct EditorScene : public GUI::Scene {
     watch(display_controls, [this]() { updateRenderOptions(); });
     toolbox->addItem(display_controls);
 
+    initializeMapTools();
+
+    initializeColonyTools();
+
+    // Add time controls
+    auto time_controls = create<TimeController>();
+    watch(time_controls, [this, time_controls]() {
+      this->renderer->current_time_state = time_controls->current_state;
+      this->control_state.updating = time_controls->current_state == TimeController::State::Play;
+      if (time_controls->tool_speed->getState()) {
+        this->window.setFramerateLimit(400);
+      } else {
+        this->window.setFramerateLimit(60);
+      }
+    });
+
+    addItem(renderer);
+    addItem(toolbox, "Toolbox");
+    addItem(time_controls, "", GUI::Alignment::Right);
+  }
+
+  void initializeMapTools() {
     // Add map edition tools
     auto tools = create<GUI::NamedContainer>("Edit Map", GUI::Container::Orientation::Vertical);
     tools->header->addItem(create<GUI::EmptyItem>());
@@ -70,6 +92,7 @@ struct EditorScene : public GUI::Scene {
         this->tool_selector->resetCallback();
       }
     });
+    control_state.request_edits_off = [tools_toggle] { tools_toggle->setState(false); };
 
     tools->header->addItem(tools_toggle);
     toolbox->addItem(tools);
@@ -83,51 +106,35 @@ struct EditorScene : public GUI::Scene {
     setBrushSize(slider->getValue());
     brush_size->addItem(slider);
     tools->addItem(brush_size);
+    auto mapGenerator = create<MapGenerator>(simulation, control_state);
+    toolbox->addItem(mapGenerator);
+  }
 
-    // Add colonies edition tools
+  void initializeColonyTools() {
     auto colony_settings =
         create<GUI::NamedContainer>("Colony settings", GUI::Container::Orientation::Vertical);
     auto max_autonomy_setter =
         create<GUI::NamedContainer>("Max autonomy", GUI::Container::Orientation::Vertical);
+    auto colony_size_setter =
+        create<GUI::NamedContainer>("Initial colony size", GUI::Container::Orientation::Vertical);
     auto autonomy_slider = create<SliderLabel>(500.0f);
+    auto colony_size_slider = create<SliderLabel>(2000.0f);
+    auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
+
     max_autonomy_setter->addItem(autonomy_slider);
     colony_settings->addItem(max_autonomy_setter);
-    auto initial_colony_size_slider = create<SliderLabel>(2000.0f);
-    auto initial_colony_size_setter =
-        create<GUI::NamedContainer>("Initial colony size", GUI::Container::Orientation::Vertical);
-    initial_colony_size_setter->addItem(initial_colony_size_slider);
-    colony_settings->addItem(initial_colony_size_setter);
-    toolbox->addItem(colony_settings);
+    colony_size_setter->addItem(colony_size_slider);
+    colony_settings->addItem(colony_size_setter);
 
-    auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
-    toolbox->addItem(colonies);
     watch(autonomy_slider, [this, autonomy_slider, colonies]() {
       colonies->setMaxAutonomy(autonomy_slider->getValue());
     });
-    watch(initial_colony_size_slider, [this, initial_colony_size_slider, colonies]() {
-      colonies->setColonySize(initial_colony_size_slider->getValue());
+    watch(colony_size_slider, [this, colony_size_slider, colonies]() {
+      colonies->setColonySize(colony_size_slider->getValue());
     });
 
-    auto mapGenerator = create<MapGenerator>(simulation, control_state);
-    toolbox->addItem(mapGenerator);
-
-    // Add time controls
-    auto time_controls = create<TimeController>();
-    watch(time_controls, [this, time_controls]() {
-      this->renderer->current_time_state = time_controls->current_state;
-      this->control_state.updating = time_controls->current_state == TimeController::State::Play;
-      if (time_controls->tool_speed->getState()) {
-        this->window.setFramerateLimit(400);
-      } else {
-        this->window.setFramerateLimit(60);
-      }
-    });
-
-    control_state.request_edits_off = [tools_toggle] { tools_toggle->setState(false); };
-
-    addItem(renderer);
-    addItem(toolbox, "Toolbox");
-    addItem(time_controls, "", GUI::Alignment::Right);
+    toolbox->addItem(colony_settings);
+    toolbox->addItem(colonies);
   }
 
   void updateRenderOptions() const {
