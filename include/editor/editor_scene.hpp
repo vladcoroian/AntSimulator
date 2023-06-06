@@ -83,16 +83,29 @@ struct EditorScene : public GUI::Scene {
     setBrushSize(slider->getValue());
     brush_size->addItem(slider);
     tools->addItem(brush_size);
+
     // Add colonies edition tools
-    auto autonomy_setter =
-        create<GUI::NamedContainer>("Max Autonomy", GUI::Container::Orientation::Vertical);
+    auto colony_settings =
+        create<GUI::NamedContainer>("Colony settings", GUI::Container::Orientation::Vertical);
+    auto max_autonomy_setter =
+        create<GUI::NamedContainer>("Max autonomy", GUI::Container::Orientation::Vertical);
     auto autonomy_slider = create<SliderLabel>(500.0f);
-    autonomy_setter->addItem(autonomy_slider);
-    toolbox->addItem(autonomy_setter);
+    max_autonomy_setter->addItem(autonomy_slider);
+    colony_settings->addItem(max_autonomy_setter);
+    auto initial_colony_size_slider = create<SliderLabel>(2000.0f);
+    auto initial_colony_size_setter =
+        create<GUI::NamedContainer>("Initial colony size", GUI::Container::Orientation::Vertical);
+    initial_colony_size_setter->addItem(initial_colony_size_slider);
+    colony_settings->addItem(initial_colony_size_setter);
+    toolbox->addItem(colony_settings);
+
     auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
     toolbox->addItem(colonies);
     watch(autonomy_slider, [this, autonomy_slider, colonies]() {
       colonies->setMaxAutonomy(autonomy_slider->getValue());
+    });
+    watch(initial_colony_size_slider, [this, initial_colony_size_slider, colonies]() {
+      colonies->setColonySize(initial_colony_size_slider->getValue());
     });
 
     auto mapGenerator = create<MapGenerator>(simulation, control_state);

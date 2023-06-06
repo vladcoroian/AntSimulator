@@ -32,9 +32,11 @@ struct Simulation {
     distance_field_builder.requestUpdate();
   }
 
-  civ::Ref<Colony> createColony(float colony_x, float colony_y, float max_autonomy) {
+  civ::Ref<Colony> createColony(float colony_x, float colony_y, float max_autonomy,
+                                int32_t max_ants_count = Conf::ANTS_COUNT) {
     // Create the colony object
-    const civ::ID colony_id = colonies.emplace_back(colony_x, colony_y, Conf::ANTS_COUNT, max_autonomy);
+    const civ::ID colony_id =
+        colonies.emplace_back(colony_x, colony_y, max_ants_count, max_autonomy);
     auto colony_ref = colonies.getRef(colony_id);
     Colony& colony = *colony_ref;
     colony.initialize(to<uint8_t>(colony_id));

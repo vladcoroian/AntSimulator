@@ -39,7 +39,7 @@ struct Colony {
   void initialize(uint8_t colony_id) {
     id = colony_id;
     base.food = 0.0f;
-    uint32_t ants_count = 1000;
+    uint32_t ants_count = max_ants_count;
     for (uint32_t i(ants_count); i--;) {
       createWorker();
     }
@@ -55,8 +55,8 @@ struct Colony {
 
   Ant& createWorker() {
     ++ant_creation_id;
-    const uint64_t ant_id =
-        ants.emplace_back(base.position.x, base.position.y, RNGf::getUnder(2.0f * PI), id, max_autonomy);
+    const uint64_t ant_id = ants.emplace_back(base.position.x, base.position.y,
+                                              RNGf::getUnder(2.0f * PI), id, max_autonomy);
     Ant& ant = ants[ant_id];
     ant.id = to<uint16_t>(ant_id);
     ant.type = Ant::Type::Worker;
