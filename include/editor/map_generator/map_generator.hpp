@@ -365,6 +365,7 @@ struct MapGenerator : public GUI::NamedContainer {
     for (const auto& room : main_rooms) {
       placeRoom(room);
     }
+    simulation.main_rooms = main_rooms;
 
     for (int32_t x(1); x < simulation.world.map.width - 1; x += 1) {
       for (int32_t y(1); y < simulation.world.map.height - 1; y += 1) {

@@ -23,15 +23,30 @@ struct ColonyCreator : public GUI::NamedContainer {
         colony_size(colony_size_) {
     root->size_type.y = GUI::Size::FitContent;
     auto add_button = create<GUI::Button>("Add", [this]() { this->createColony(); });
+    auto add_random_button = create<GUI::Button>("Spawn colony", [this]() {
+      // select random room and place colony in center
+      if (!simulation.main_rooms.empty()) {
+        const int index = RNGf::getUnder(simulation.main_rooms.size());
+        const auto& room = simulation.main_rooms[index];
+        this->createColony(room.pos.x * simulation.world.map.cell_size,
+                           room.pos.y * simulation.world.map.cell_size);
+      } else {
+        std::cout << "No room to place colony in" << std::endl;
+      }
+    });
     add_button->setWidth(50.0f, GUI::Size::Fixed);
     add_button->setHeight(30.0f, GUI::Size::Fixed);
+
+    add_random_button->setWidth(150.0f, GUI::Size::Fixed);
+    add_random_button->setHeight(30.0f, GUI::Size::Fixed);
     header->addItem(create<GUI::EmptyItem>());
     header->addItem(add_button);
+    header->addItem(add_random_button);
   }
 
-  void createColony() {
+  void createColony(float x = 50.0f, float y = 50.0f) {
     if (this->colonies_count < Conf::MAX_COLONIES_COUNT) {
-      auto new_colony = simulation.createColony(50.0f, 50.0f, max_autonomy, colony_size);
+      auto new_colony = simulation.createColony(x, y, max_autonomy, colony_size);
       auto colony_tool = create<ColonyTool>(new_colony, control_state);
       colony_tool->on_select = [this](int8_t id) { select(id); };
       // Add the new item to this

@@ -9,6 +9,7 @@
 #include "simulation/world/map_loader.hpp"
 #include "simulation/ant/fight_system.hpp"
 #include "world/async_distance_field_builder.hpp"
+#include "../editor/map_generator/room.hpp"
 
 struct Simulation {
   civ::Vector<Colony> colonies;
@@ -19,6 +20,7 @@ struct Simulation {
   FightSystem fight_system;
   sf::Clock clock;
   AsyncDistanceFieldBuilder distance_field_builder;
+  std::vector<edtr::Room> main_rooms;
 
   explicit Simulation(sf::Window& window)
       : world(Conf::WORLD_WIDTH, Conf::WORLD_HEIGHT),
