@@ -39,6 +39,14 @@ struct World {
     }
   }
 
+  void removeAllFood() {
+    for (int32_t x(0); x < map.width; x++) {
+      for (int32_t y(0); y < map.height; y++) {
+        map.get(sf::Vector2i(x, y)).food = 0;
+      }
+    }
+  }
+
   void update(float dt) { map.update(dt); }
 
   void addMarker(sf::Vector2f pos, Mode type, float intensity, uint8_t colony_id,

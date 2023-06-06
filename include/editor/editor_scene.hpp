@@ -15,6 +15,7 @@
 #include "time_control/time_controller.hpp"
 #include "display_options/display_options.hpp"
 #include "map_generator/map_generator.hpp"
+#include "spawn_food_sources.hpp"
 
 namespace edtr {
 
@@ -109,70 +110,7 @@ struct EditorScene : public GUI::Scene {
     auto mapGenerator = create<MapGenerator>(simulation, control_state);
     toolbox->addItem(mapGenerator);
 
-    auto spawn_food_sources =
-        create<GUI::NamedContainer>("Spawn food sources", GUI::Container::Orientation::Vertical);
-    auto food_source_number_setter = create<GUI::NamedContainer>(
-        "Number of food sources", GUI::Container::Orientation::Vertical);
-    auto spawn_food_sources_slider = create<SliderLabel>(10.0f);
-    auto food_quantity_setter =
-        create<GUI::NamedContainer>("Food quantity", GUI::Container::Orientation::Vertical);
-    auto food_quantity_slider = create<SliderLabel>(100.0f);
-    auto window_size_setter =
-        create<GUI::NamedContainer>("Food window size", GUI::Container::Orientation::Vertical);
-    auto window_size_slider = create<SliderLabel>(10.0f);
-    auto spawn_food_sources_button = create<GUI::Button>(
-        "Spawn", [this, spawn_food_sources_slider, food_quantity_slider, window_size_slider]() {
-          for (int i = 0; i < spawn_food_sources_slider->getValue(); ++i) {
-            bool placedFood = false;
-            while (!placedFood) {
-              const float x = RNGf::getUnder(simulation.world.map.width);
-              const float y = RNGf::getUnder(simulation.world.map.height);
-              // count empty cells in a 5x5 window around (x, y)
-              int emptyCells = 0;
-              int brush_size = window_size_slider->getValue() / 2;
-              for (int dx = -brush_size; dx <= brush_size; ++dx) {
-                for (int dy = -brush_size; dy <= brush_size; ++dy) {
-                  auto pos = sf::Vector2i(x + dx, y + dy);
-                  if (!simulation.world.map.checkCoords(pos)) {
-                    continue;
-                  }
-                  const auto& cell = simulation.world.map.get(pos);
-                  if (!cell.wall && cell.food == 0) {
-                    ++emptyCells;
-                  }
-                }
-              }
-              if (emptyCells >= brush_size * brush_size / 2) {
-                placedFood = true;
-                for (int dx = -brush_size; dx <= brush_size; ++dx) {
-                  for (int dy = -brush_size; dy <= brush_size; ++dy) {
-                    auto pos = sf::Vector2i(x + dx, y + dy);
-                    if (!simulation.world.map.checkCoords(pos)) {
-                      continue;
-                    }
-                    auto& cell = simulation.world.map.get(pos);
-                    if (!cell.wall && cell.food == 0) {
-                      cell.food = food_quantity_slider->getValue();
-                    }
-                  }
-                }
-              } else {
-                std::cout << "Resampling..." << std::endl;
-              }
-            }
-          }
-        });
-
-    spawn_food_sources_button->setWidth(70.0f, GUI::Size::Fixed);
-    spawn_food_sources_button->setHeight(35.0f, GUI::Size::Fixed);
-    food_source_number_setter->addItem(spawn_food_sources_slider);
-    spawn_food_sources->addItem(food_source_number_setter);
-    food_quantity_setter->addItem(food_quantity_slider);
-    spawn_food_sources->addItem(food_quantity_setter);
-    window_size_setter->addItem(window_size_slider);
-    spawn_food_sources->addItem(window_size_setter);
-    spawn_food_sources->header->addItem(create<GUI::EmptyItem>());
-    spawn_food_sources->header->addItem(spawn_food_sources_button);
+    auto spawn_food_sources = create<SpawnFoodSource>(simulation);
     toolbox->addItem(spawn_food_sources);
   }
 
