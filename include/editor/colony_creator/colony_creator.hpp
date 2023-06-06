@@ -35,10 +35,10 @@ struct ColonyCreator : public GUI::NamedContainer {
       }
     });
     add_button->setWidth(50.0f, GUI::Size::Fixed);
-    add_button->setHeight(30.0f, GUI::Size::Fixed);
+    add_button->setHeight(35.0f, GUI::Size::Fixed);
 
-    add_random_button->setWidth(150.0f, GUI::Size::Fixed);
-    add_random_button->setHeight(30.0f, GUI::Size::Fixed);
+    add_random_button->setWidth(160.0f, GUI::Size::Fixed);
+    add_random_button->setHeight(35.0f, GUI::Size::Fixed);
     header->addItem(create<GUI::EmptyItem>());
     header->addItem(add_button);
     header->addItem(add_random_button);
