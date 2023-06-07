@@ -36,7 +36,6 @@ struct SpawnFoodSource : public GUI::NamedContainer {
 
     food_source_number_setter->addItem(spawn_food_sources_slider);
 
-    // create Container for the buttons with a fixed height
     auto buttons = create<GUI::Container>(GUI::Container::Orientation::Horizontal);
     buttons->size.y = 50.0f;
     buttons->size_type.y = GUI::Size::Fixed;
@@ -54,7 +53,7 @@ struct SpawnFoodSource : public GUI::NamedContainer {
 
     auto tools_toggle = create<GUI::Toggle>();
     tools_toggle->color_on = {240, 180, 0};
-    tools_toggle->setState(true);
+    tools_toggle->setState(false);
     watch(tools_toggle, [this, tools_toggle] {
       if (tools_toggle->state) {
         showRoot();
@@ -62,6 +61,7 @@ struct SpawnFoodSource : public GUI::NamedContainer {
         hideRoot();
       }
     });
+    hideRoot();
     header->addItem(tools_toggle);
   }
 

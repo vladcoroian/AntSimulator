@@ -123,20 +123,33 @@ struct EditorScene : public GUI::Scene {
         create<GUI::NamedContainer>("Initial colony size", GUI::Container::Orientation::Vertical);
     auto autonomy_slider = create<SliderLabel>(500.0f);
     auto colony_size_slider = create<SliderLabel>(2000.0f);
-    auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
 
     max_autonomy_setter->addItem(autonomy_slider);
     colony_settings->addItem(max_autonomy_setter);
     colony_size_setter->addItem(colony_size_slider);
     colony_settings->addItem(colony_size_setter);
 
+    auto tools_toggle = create<GUI::Toggle>();
+    tools_toggle->color_on = {240, 180, 0};
+    tools_toggle->setState(false);
+    watch(tools_toggle, [this, tools_toggle, colony_settings] {
+      if (tools_toggle->state) {
+        colony_settings->showRoot();
+      } else {
+        colony_settings->hideRoot();
+      }
+    });
+    colony_settings->header->addItem(create<GUI::EmptyItem>());
+    colony_settings->header->addItem(tools_toggle);
+    colony_settings->hideRoot();
+
+    auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
     watch(autonomy_slider, [this, autonomy_slider, colonies]() {
       colonies->setMaxAutonomy(autonomy_slider->getValue());
     });
     watch(colony_size_slider, [this, colony_size_slider, colonies]() {
       colonies->setColonySize(colony_size_slider->getValue());
     });
-
     toolbox->addItem(colony_settings);
     toolbox->addItem(colonies);
   }

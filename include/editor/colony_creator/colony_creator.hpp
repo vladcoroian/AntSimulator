@@ -41,6 +41,7 @@ struct ColonyCreator : public GUI::NamedContainer {
     add_random_button->setHeight(35.0f, GUI::Size::Fixed);
     header->addItem(create<GUI::EmptyItem>());
     header->addItem(add_button);
+    header->addItem(create<GUI::EmptyItem>());
     header->addItem(add_random_button);
   }
 
