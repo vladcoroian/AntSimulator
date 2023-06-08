@@ -212,6 +212,10 @@ struct Item {
         item->setPosition(sf::Vector2f(size.x - item->size.x, 0.0f) +
                           sf::Vector2f(-padding, padding));
         break;
+      case Alignment::Center:
+        item->setPosition(sf::Vector2f(size.x / 2.0f - item->size.x / 2.0f, 0.0f) +
+                          sf::Vector2f(-padding, padding));
+        break;
       default:
         break;
     }

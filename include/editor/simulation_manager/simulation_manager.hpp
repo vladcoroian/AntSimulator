@@ -4,7 +4,7 @@
 
 namespace edtr {
 
-struct TimeController : public GUI::NamedContainer {
+struct SimulationManager : public GUI::NamedContainer {
   enum class State {
     Play,
     Pause,
@@ -16,8 +16,8 @@ struct TimeController : public GUI::NamedContainer {
   SPtr<ToolOption> tool_play;
   SPtr<GUI::NamedToggle> tool_speed;
 
-  TimeController()
-      : GUI::NamedContainer("Time Control", Container::Orientation::Horizontal),
+  SimulationManager()
+      : GUI::NamedContainer("Simulation Manager", Container::Orientation::Vertical),
         current_state(State::Pause) {
     size_type.x = GUI::Size::FitContent;
     size_type.y = GUI::Size::FitContent;
@@ -43,9 +43,14 @@ struct TimeController : public GUI::NamedContainer {
     watch(tool_speed, [this] { notifyChanged(); });
 
     // Add items
-    addItem(tool_pause);
-    addItem(tool_play);
-    addItem(tool_speed);
+    auto buttons = create<GUI::Container>(GUI::Container::Orientation::Horizontal);
+    buttons->size.x = 300.0f;
+    buttons->size_type.x = GUI::Size::FitContent;
+    buttons->size_type.y = GUI::Size::FitContent;
+    buttons->addItem(tool_pause);
+    buttons->addItem(tool_play);
+    buttons->addItem(tool_speed);
+    addItem(buttons);
     // Default selection
     select(State::Pause);
   }
@@ -68,6 +73,8 @@ struct TimeController : public GUI::NamedContainer {
     }
     notifyChanged();
   }
+
+  void startSimulation() { select(State::Play); }
 };
 
 }  // namespace edtr

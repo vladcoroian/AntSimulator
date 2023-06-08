@@ -9,28 +9,23 @@ namespace edtr {
 
 struct SpawnFoodSource : public GUI::NamedContainer {
   Simulation& simulation;
+  SPtr<SliderLabel> spawn_food_sources_slider;
+  SPtr<SliderLabel> food_quantity_slider;
+  SPtr<SliderLabel> window_size_slider;
 
   explicit SpawnFoodSource(Simulation& sim)
       : GUI::NamedContainer("Spawn food sources", GUI::Container::Orientation::Vertical),
         simulation(sim) {
     auto food_source_number_setter = create<GUI::NamedContainer>(
         "Number of food sources", GUI::Container::Orientation::Vertical);
-    auto spawn_food_sources_slider = create<SliderLabel>(10.0f);
+    spawn_food_sources_slider = create<SliderLabel>(10.0f);
     auto food_quantity_setter =
         create<GUI::NamedContainer>("Food quantity", GUI::Container::Orientation::Vertical);
-    auto food_quantity_slider = create<SliderLabel>(100.0f);
+    food_quantity_slider = create<SliderLabel>(100.0f);
     auto window_size_setter =
         create<GUI::NamedContainer>("Food window size", GUI::Container::Orientation::Vertical);
-    auto window_size_slider = create<SliderLabel>(10.0f);
-    auto spawn_food_sources_button = create<ToolOption>(
-        "Spawn", [this, spawn_food_sources_slider, food_quantity_slider, window_size_slider]() {
-          auto food_quantity = (int32_t)food_quantity_slider->getValue();
-          auto window_size = (int32_t)window_size_slider->getValue();
-          auto food_sources = (int32_t)spawn_food_sources_slider->getValue();
-          for (int i = 0; i < food_sources; ++i) {
-            spawnFood(food_quantity, window_size, food_sources);
-          }
-        });
+    window_size_slider = create<SliderLabel>(10.0f);
+    auto spawn_food_sources_button = create<ToolOption>("Spawn", [this]() { spawnFoodSources(); });
     auto remove_food_sources_button =
         create<ToolOption>("Remove all food", [this]() { simulation.world.removeAllFood(); });
 
@@ -101,6 +96,15 @@ struct SpawnFoodSource : public GUI::NamedContainer {
       } else {
         std::cout << "Resampling..." << std::endl;
       }
+    }
+  }
+
+  void spawnFoodSources() {
+    auto food_quantity = (int32_t)food_quantity_slider->getValue();
+    auto window_size = (int32_t)window_size_slider->getValue();
+    auto food_sources = (int32_t)spawn_food_sources_slider->getValue();
+    for (int i = 0; i < food_sources; ++i) {
+      spawnFood(food_quantity, window_size, food_sources);
     }
   }
 };

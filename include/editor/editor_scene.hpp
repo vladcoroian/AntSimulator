@@ -12,7 +12,7 @@
 #include "render/renderer.hpp"
 #include "simulation/config.hpp"
 #include "editor/world_view.hpp"
-#include "time_control/time_controller.hpp"
+#include "simulation_manager/simulation_manager.hpp"
 #include "display_options/display_options.hpp"
 #include "map_generator/map_generator.hpp"
 #include "spawn_food_sources.hpp"
@@ -29,6 +29,10 @@ struct EditorScene : public GUI::Scene {
   SPtr<WorldView> renderer;
   SPtr<ToolSelector> tool_selector;
   SPtr<DisplayOption> display_controls;
+  SPtr<MapGenerator> map_generator;
+  SPtr<ColonyCreator> colonies;
+  SPtr<SimulationManager> simulation_manager;
+  SPtr<SpawnFoodSource> spawn_food_sources;
 
   explicit EditorScene(sf::RenderWindow& window, Simulation& sim)
       : GUI::Scene(window), control_state(sim), simulation(sim) {
@@ -59,21 +63,10 @@ struct EditorScene : public GUI::Scene {
 
     initializeColonyTools();
 
-    // Add time controls
-    auto time_controls = create<TimeController>();
-    watch(time_controls, [this, time_controls]() {
-      this->renderer->current_time_state = time_controls->current_state;
-      this->control_state.updating = time_controls->current_state == TimeController::State::Play;
-      if (time_controls->tool_speed->getState()) {
-        this->window.setFramerateLimit(400);
-      } else {
-        this->window.setFramerateLimit(60);
-      }
-    });
-
     addItem(renderer);
     addItem(toolbox, "Toolbox");
-    addItem(time_controls, "", GUI::Alignment::Right);
+    initializeSimulationManager();
+    addFullSimulationButton();
   }
 
   void initializeMapTools() {
@@ -107,10 +100,10 @@ struct EditorScene : public GUI::Scene {
     setBrushSize(slider->getValue());
     brush_size->addItem(slider);
     tools->addItem(brush_size);
-    auto mapGenerator = create<MapGenerator>(simulation, control_state);
-    toolbox->addItem(mapGenerator);
+    map_generator = create<MapGenerator>(simulation, control_state);
+    toolbox->addItem(map_generator);
 
-    auto spawn_food_sources = create<SpawnFoodSource>(simulation);
+    spawn_food_sources = create<SpawnFoodSource>(simulation);
     toolbox->addItem(spawn_food_sources);
   }
 
@@ -143,15 +136,46 @@ struct EditorScene : public GUI::Scene {
     colony_settings->header->addItem(tools_toggle);
     colony_settings->hideRoot();
 
-    auto colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
-    watch(autonomy_slider, [this, autonomy_slider, colonies]() {
-      colonies->setMaxAutonomy(autonomy_slider->getValue());
-    });
-    watch(colony_size_slider, [this, colony_size_slider, colonies]() {
+    colonies = create<ColonyCreator>(simulation, control_state, autonomy_slider->getValue());
+    watch(autonomy_slider,
+          [this, autonomy_slider]() { colonies->setMaxAutonomy(autonomy_slider->getValue()); });
+    watch(colony_size_slider, [this, colony_size_slider]() {
       colonies->setColonySize(colony_size_slider->getValue());
     });
     toolbox->addItem(colony_settings);
     toolbox->addItem(colonies);
+  }
+
+  void initializeSimulationManager() {
+    simulation_manager = create<SimulationManager>();
+    watch(simulation_manager, [this]() {
+      this->renderer->current_time_state = simulation_manager->current_state;
+      this->control_state.updating =
+          simulation_manager->current_state == SimulationManager::State::Play;
+      if (simulation_manager->tool_speed->getState()) {
+        this->window.setFramerateLimit(400);
+      } else {
+        this->window.setFramerateLimit(60);
+      }
+    });
+    addItem(simulation_manager, "", GUI::Alignment::Right);
+  }
+
+  void addFullSimulationButton() {
+    auto full_simulation = create<ToolOption>("Full Simulation", [this]() {
+      // generate map, spawn colonies, spawn food
+      simulation.world.resetMap();
+      simulation.world.removeAllFood();
+      colonies->removeAllColonies();
+      map_generator->createMap();
+      spawn_food_sources->spawnFoodSources();
+      colonies->createRandomColony();
+      simulation_manager->startSimulation();
+    });
+    full_simulation->color = {255, 200, 0};
+    full_simulation->setWidth(200.0f);
+    full_simulation->setHeight(50.0f);
+    toolbox->addItem(full_simulation);
   }
 
   void updateRenderOptions() const {

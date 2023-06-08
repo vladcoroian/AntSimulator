@@ -2,14 +2,14 @@
 #include "GUI/item.hpp"
 #include "render/renderer.hpp"
 #include "editor/control_state.hpp"
-#include "editor/time_control/time_controller.hpp"
+#include "editor/simulation_manager/simulation_manager.hpp"
 
 namespace edtr {
 
 struct WorldView : GUI::Item {
   Simulation& simulation;
   ControlState& control_state;
-  TimeController::State current_time_state = TimeController::State::Pause;
+  SimulationManager::State current_time_state = SimulationManager::State::Pause;
   bool action_button_click = false;
 
   explicit WorldView(sf::Vector2f size_, Simulation& simulation_, ControlState& control_state_)
@@ -74,7 +74,7 @@ struct WorldView : GUI::Item {
 
   void update() override {
     const float dt = 0.016f;
-    if (current_time_state == TimeController::State::Play) {
+    if (current_time_state == SimulationManager::State::Play) {
       simulation.update(dt);
     }
   }
