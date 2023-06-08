@@ -162,17 +162,16 @@ struct EditorScene : public GUI::Scene {
   }
 
   void addFullSimulationButton() {
-    // create a named container
     auto full_simulation_container =
         create<GUI::NamedContainer>("Full Simulation", GUI::Container::Orientation::Horizontal);
-    auto regenerate_map_toggle = create<GUI::NamedToggle>("Regenerate map");
-    regenerate_map_toggle->setState(true);
+    auto regenerate_map_toggle = create<GUI::NamedToggle>("Keep same map");
+    regenerate_map_toggle->setState(false);
 
     auto full_simulation = create<ToolOption>("Full Simulation", [this, regenerate_map_toggle]() {
       // generate map, spawn colonies, spawn food
       simulation.world.removeAllFood();
       colonies->removeAllColonies();
-      if (regenerate_map_toggle->getState()) {
+      if (!regenerate_map_toggle->getState()) {
         simulation.world.resetMap();
         map_generator->createMap();
       }
