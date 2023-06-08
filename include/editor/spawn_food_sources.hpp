@@ -79,7 +79,7 @@ struct SpawnFoodSource : public GUI::NamedContainer {
           }
         }
       }
-      if (emptyCells >= brush_size * brush_size * 3 / 4) {
+      if (emptyCells == window_size * window_size) {
         placedFood = true;
         for (int dx = -brush_size; dx <= brush_size; ++dx) {
           for (int dy = -brush_size; dy <= brush_size; ++dy) {
