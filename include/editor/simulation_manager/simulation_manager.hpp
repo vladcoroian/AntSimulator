@@ -45,8 +45,10 @@ struct SimulationManager : public GUI::NamedContainer {
 
     // Named container with a slider and a button next to it, when button is pressed the seed is set
     // to the slider value
-    auto seed_setter = create<GUI::NamedContainer>("Seed", GUI::Container::Orientation::Vertical);
+    auto seed_setter = create<GUI::NamedContainer>("Seed", GUI::Container::Orientation::Horizontal);
     seed_picker = create<SliderLabel>(1000.0);
+    seed_setter->setWidth(500.0f);
+    seed_picker->setWidth(430.0f);
     auto seed_set_button = create<GUI::Button>("Set", [this]() {
       int new_seed = (int)seed_picker->getValue();
       std::cout << "Setting seed to " << new_seed << std::endl;
