@@ -6,7 +6,7 @@ class NumberGenerator {
   std::random_device rd;
   std::mt19937 gen;
 
-  NumberGenerator() : gen(20) {}
+  NumberGenerator(int seed = 20) : gen(seed) {}
 };
 
 template <typename T>
@@ -15,7 +15,7 @@ class RealNumberGenerator : public NumberGenerator {
   std::uniform_real_distribution<T> dis;
 
  public:
-  RealNumberGenerator() : NumberGenerator(), dis(0.0f, 1.0f) {}
+  RealNumberGenerator(int seed = 20) : NumberGenerator(seed), dis(0.0f, 1.0f) {}
 
   // random_device is not copyable
   RealNumberGenerator(const RealNumberGenerator<T>& right) : NumberGenerator(), dis(right.dis) {}
@@ -35,7 +35,7 @@ class RNG {
   static RealNumberGenerator<T>* gen;
 
  public:
-  static void initialize() { gen = new RealNumberGenerator<T>(); }
+  static void initialize(int seed = 20) { gen = new RealNumberGenerator<T>(seed); }
 
   static T get() { return gen->get(); }
 

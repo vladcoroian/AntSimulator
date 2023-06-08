@@ -15,6 +15,7 @@ struct SimulationManager : public GUI::NamedContainer {
   SPtr<ToolOption> tool_pause;
   SPtr<ToolOption> tool_play;
   SPtr<GUI::NamedToggle> tool_speed;
+  SPtr<SliderLabel> seed_picker;
 
   SimulationManager()
       : GUI::NamedContainer("Simulation Manager", Container::Orientation::Vertical),
@@ -42,15 +43,29 @@ struct SimulationManager : public GUI::NamedContainer {
     tool_speed->setWidth(100.0f);
     watch(tool_speed, [this] { notifyChanged(); });
 
+    // Named container with a slider and a button next to it, when button is pressed the seed is set
+    // to the slider value
+    auto seed_setter = create<GUI::NamedContainer>("Seed", GUI::Container::Orientation::Vertical);
+    seed_picker = create<SliderLabel>(1000.0);
+    auto seed_set_button = create<GUI::Button>("Set", [this]() {
+      int new_seed = (int)seed_picker->getValue();
+      std::cout << "Setting seed to " << new_seed << std::endl;
+      RNGf::initialize(new_seed);
+    });
+    seed_set_button->setHeight(30.0f);
+    seed_setter->addItem(seed_picker);
+    seed_setter->addItem(seed_set_button);
+
     // Add items
     auto buttons = create<GUI::Container>(GUI::Container::Orientation::Horizontal);
-    buttons->size.x = 300.0f;
+    buttons->size.x = 400.0f;
     buttons->size_type.x = GUI::Size::FitContent;
     buttons->size_type.y = GUI::Size::FitContent;
     buttons->addItem(tool_pause);
     buttons->addItem(tool_play);
     buttons->addItem(tool_speed);
     addItem(buttons);
+    addItem(seed_setter);
     // Default selection
     select(State::Pause);
   }
