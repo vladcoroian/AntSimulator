@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-
+#include <iostream>
 #include "simulation/ant/ant_mode.hpp"
 #include "simulation/config.hpp"
 #include "common/utils.hpp"
@@ -128,8 +128,10 @@ struct HitPoint {
 };
 
 struct WorldGrid : public Grid<WorldCell> {
+  int32_t food_count;
+
   WorldGrid(uint32_t width_, uint32_t height_, uint32_t cell_size_)
-      : Grid(width_, height_, cell_size_) {}
+      : Grid(width_, height_, cell_size_), food_count(0) {}
 
   void addMarker(sf::Vector2f pos, Mode type, float intensity, uint8_t colony_id,
                  bool permanent = false) {
@@ -154,6 +156,7 @@ struct WorldGrid : public Grid<WorldCell> {
     WorldCell& cell = get(pos);
     if (!cell.wall) {
       cell.food += quantity;
+      food_count += quantity;
     }
   }
 
@@ -171,11 +174,17 @@ struct WorldGrid : public Grid<WorldCell> {
 
   [[nodiscard]] bool isOnFood(sf::Vector2f pos) const { return getCst(pos).food; }
 
-  bool pickFood(sf::Vector2f pos) { return get(pos).pick(); }
+  bool pickFood(sf::Vector2f pos) {
+    // always gets called when there is food to pick
+    bool picked_food = get(pos).pick();
+    food_count--;
+    return picked_food;
+  }
 
   void clearCell(sf::Vector2i cell_coord) {
     auto& cell = get(cell_coord);
     cell.wall = 0;
+    food_count -= cell.food;
     cell.food = 0;
   }
 

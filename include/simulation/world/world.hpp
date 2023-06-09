@@ -42,7 +42,7 @@ struct World {
   void removeAllFood() {
     for (int32_t x(0); x < map.width; x++) {
       for (int32_t y(0); y < map.height; y++) {
-        map.get(sf::Vector2i(x, y)).food = 0;
+        map.clearCell(sf::Vector2i(x, y));
       }
     }
   }

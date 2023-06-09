@@ -147,7 +147,7 @@ struct EditorScene : public GUI::Scene {
   }
 
   void initializeSimulationManager() {
-    simulation_manager = create<SimulationManager>();
+    simulation_manager = create<SimulationManager>(simulation, control_state);
     watch(simulation_manager, [this]() {
       this->renderer->current_time_state = simulation_manager->current_state;
       this->control_state.updating =

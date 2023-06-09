@@ -89,7 +89,7 @@ struct SpawnFoodSource : public GUI::NamedContainer {
             }
             auto& cell = simulation.world.map.get(pos);
             if (!cell.wall && cell.food == 0) {
-              cell.food = food_quantity;
+              simulation.world.addFoodAt(pos, food_quantity);
             }
           }
         }

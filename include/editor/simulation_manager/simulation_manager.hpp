@@ -4,6 +4,68 @@
 
 namespace edtr {
 
+struct FoodChart : public GUI::Item {
+  Simulation& simulation;
+  ControlState& control_state;
+  Graphic chart;
+  uint32_t frame_count = 0;
+  SPtr<Item> chart_zone;
+
+  explicit FoodChart(Simulation& sim, ControlState& control_state_)
+      : chart(1000, {}, {}), simulation(sim), control_state(control_state_) {
+    size_type.x = GUI::Size::Auto;
+    size_type.y = GUI::Size::Auto;
+    setHeight(100.0f);
+  }
+
+  void onSizeChange() override {
+    chart.width = size.x;
+    chart.height = size.y;
+  }
+
+  void onPositionChange() override {
+    chart.x = position.x;
+    chart.y = position.y;
+  }
+
+  void update() override {
+    if (control_state.updating) {
+      if (frame_count % 10 == 0) {
+        chart.addValue(to<float>(simulation.world.map.food_count));
+      }
+      ++frame_count;
+    }
+  }
+
+  void render(sf::RenderTarget& target) override {
+    chart.color = {0, 150, 0};
+    GUI::Item::draw(target, chart);
+  }
+};
+
+struct FoodStats : public GUI::NamedContainer {
+  SPtr<GUI::TextLabel> food_label;
+  Simulation& simulation;
+  ControlState& control_state;
+  SPtr<FoodChart> food_chart;
+
+  FoodStats(Simulation& sim, ControlState& control_state)
+      : GUI::NamedContainer("Food left"), simulation(sim), control_state(control_state) {
+    header->addItem(create<GUI::EmptyItem>());
+
+    food_label = create<GUI::TextLabel>("", 22);
+    header->addItem(food_label);
+    root->size_type = {GUI::Size::Auto, GUI::Size::Auto};
+    setHeight(160.0f);
+    food_chart = create<FoodChart>(simulation, control_state);
+    GUI::NamedContainer::addItem(food_chart);
+  }
+
+  void update() override { food_label->setText(toStr(simulation.world.map.food_count)); }
+
+  void reset() { food_chart->chart.reset(); }
+};
+
 struct SimulationManager : public GUI::NamedContainer {
   enum class State {
     Play,
@@ -11,14 +73,19 @@ struct SimulationManager : public GUI::NamedContainer {
   };
 
   State current_state = State::Pause;
+  Simulation& simulation;
+  ControlState& control_state;
+  SPtr<FoodStats> food_chart;
 
   SPtr<ToolOption> tool_pause;
   SPtr<ToolOption> tool_play;
   SPtr<GUI::NamedToggle> tool_speed;
   SPtr<SliderLabel> seed_picker;
 
-  SimulationManager()
+  SimulationManager(Simulation& sim, ControlState& control_state_)
       : GUI::NamedContainer("Simulation Manager", Container::Orientation::Vertical),
+        simulation(sim),
+        control_state(control_state_),
         current_state(State::Pause) {
     size_type.x = GUI::Size::FitContent;
     size_type.y = GUI::Size::FitContent;
@@ -58,6 +125,9 @@ struct SimulationManager : public GUI::NamedContainer {
     seed_setter->addItem(seed_picker);
     seed_setter->addItem(seed_set_button);
 
+    // named container that contains a chart to display amount of food left
+    food_chart = create<FoodStats>(simulation, control_state);
+
     // Add items
     auto buttons = create<GUI::Container>(GUI::Container::Orientation::Horizontal);
     buttons->size.x = 400.0f;
@@ -68,6 +138,7 @@ struct SimulationManager : public GUI::NamedContainer {
     buttons->addItem(tool_speed);
     addItem(buttons);
     addItem(seed_setter);
+    addItem(food_chart);
     // Default selection
     select(State::Pause);
   }
@@ -91,7 +162,10 @@ struct SimulationManager : public GUI::NamedContainer {
     notifyChanged();
   }
 
-  void startSimulation() { select(State::Play); }
+  void startSimulation() {
+    select(State::Play);
+    food_chart->reset();
+  }
 };
 
 }  // namespace edtr

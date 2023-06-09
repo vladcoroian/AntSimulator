@@ -38,6 +38,15 @@ struct Graphic : public sf::Drawable {
     }
   }
 
+  void reset() {
+    for (auto& v : values) {
+      v = 0.0f;
+    }
+    max_value = 0.0f;
+    current_index = 0;
+    full = false;
+  }
+
   void next() {
     ++current_index;
     if (current_index == values.size()) {
