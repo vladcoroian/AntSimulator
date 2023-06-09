@@ -188,6 +188,12 @@ struct WorldGrid : public Grid<WorldCell> {
     cell.food = 0;
   }
 
+  void removeFood(sf::Vector2i cell_coord) {
+    auto& cell = get(cell_coord);
+    food_count -= cell.food;
+    cell.food = 0;
+  }
+
   HitPoint getFirstHit(sf::Vector2f p, sf::Vector2f d, float max_dist) {
     HitPoint intersection;
     sf::Vector2i cell_p = getCellCoords(p);

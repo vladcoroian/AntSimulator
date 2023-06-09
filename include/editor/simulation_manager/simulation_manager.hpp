@@ -110,8 +110,6 @@ struct SimulationManager : public GUI::NamedContainer {
     tool_speed->setWidth(100.0f);
     watch(tool_speed, [this] { notifyChanged(); });
 
-    // Named container with a slider and a button next to it, when button is pressed the seed is set
-    // to the slider value
     auto seed_setter = create<GUI::NamedContainer>("Seed", GUI::Container::Orientation::Horizontal);
     seed_picker = create<SliderLabel>(1000.0);
     seed_setter->setWidth(500.0f);
@@ -125,7 +123,6 @@ struct SimulationManager : public GUI::NamedContainer {
     seed_setter->addItem(seed_picker);
     seed_setter->addItem(seed_set_button);
 
-    // named container that contains a chart to display amount of food left
     food_chart = create<FoodStats>(simulation, control_state);
 
     // Add items
