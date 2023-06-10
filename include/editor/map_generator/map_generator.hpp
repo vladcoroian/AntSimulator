@@ -15,7 +15,8 @@ namespace edtr {
 struct MapGenerator : public GUI::NamedContainer {
   Simulation& simulation;
   ControlState& control_state;
-  int32_t brush_size = 5;
+  int32_t brush_size = 11;
+  float fill_percentage = 0.45f;
   SPtr<ToolOption> generate_button;
   SPtr<ToolOption> reset_map_button;
   std::vector<Room> rooms_;
@@ -380,7 +381,7 @@ struct MapGenerator : public GUI::NamedContainer {
         if (in_hallway) {
           continue;
         }
-        if (RNGf::getUnder(1.0f) < 0.4f) {
+        if (RNGf::getUnder(1.0f) < fill_percentage) {
           applyBrush(
               sf::Vector2f{RNGf::getUnder(Conf::WORLD_WIDTH), RNGf::getUnder(Conf::WORLD_HEIGHT)},
               [this](int32_t x, int32_t y) {
