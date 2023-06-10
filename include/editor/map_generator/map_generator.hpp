@@ -15,7 +15,7 @@ namespace edtr {
 struct MapGenerator : public GUI::NamedContainer {
   Simulation& simulation;
   ControlState& control_state;
-  int32_t brush_size = 5;
+  int32_t brush_size = 15;
   SPtr<ToolOption> generate_button;
   SPtr<ToolOption> reset_map_button;
   std::vector<Room> rooms_;
