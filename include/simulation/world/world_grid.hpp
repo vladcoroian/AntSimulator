@@ -24,6 +24,8 @@ struct ColonyCell {
   // Current ant
   int16_t current_ant = -1;
   bool fighting;
+  float decay_rate_to_home = 0.8;
+  float decay_rate_to_food = 1 - pow(10, -4);
 
   ColonyCell() : intensity{0.0f, 0.0f, 0.0f}, repellent(0.0f), fighting(false) {}
 
@@ -33,8 +35,10 @@ struct ColonyCell {
     fighting = false;
     // Update toFood and toHome
     intensity[0] -= permanent ? 0.0f : dt;
-    intensity[1] -= dt;
-    intensity[2] -= dt;
+    intensity[1] = intensity[1] * decay_rate_to_food;
+    intensity[2] = intensity[2] * decay_rate_to_home;
+    //intensity[1] -= dt;
+    //intensity[2] -= dt;
     // Update repellents
     repellent -= dt;
     repellent = std::max(0.0f, repellent);

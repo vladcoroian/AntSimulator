@@ -15,7 +15,7 @@ namespace edtr {
 struct MapGenerator : public GUI::NamedContainer {
   Simulation& simulation;
   ControlState& control_state;
-  int32_t brush_size = 11;
+  int32_t brush_size = 15;
   float fill_percentage = 0.45f;
   SPtr<ToolOption> generate_button;
   SPtr<ToolOption> reset_map_button;
