@@ -37,9 +37,9 @@ struct ColonyCell {
     intensity[0] -= permanent ? 0.0f : dt;
     intensity[1] = intensity[1] * decay_rate_to_food;
     intensity[2] = intensity[2] * decay_rate_to_home;
-    //intensity[1] -= dt;
-    //intensity[2] -= dt;
-    // Update repellents
+    // intensity[1] -= dt;
+    // intensity[2] -= dt;
+    //  Update repellents
     repellent -= dt;
     repellent = std::max(0.0f, repellent);
   }

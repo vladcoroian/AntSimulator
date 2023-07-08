@@ -20,12 +20,13 @@ struct MapGenerator : public GUI::NamedContainer {
   SPtr<ToolOption> generate_button;
   SPtr<ToolOption> reset_map_button;
   std::vector<Room> rooms_;
+  int32_t simulation_width = Conf::WORLD_WIDTH / simulation.world.map.cell_size;
+  int32_t simulation_height = Conf::WORLD_HEIGHT / simulation.world.map.cell_size;
 
   explicit MapGenerator(Simulation& sim, ControlState& control_state_)
-      : GUI::NamedContainer("Map Generator", Container::Orientation::Horizontal),
+      : GUI::NamedContainer("Map Generator", Container::Orientation::Vertical),
         simulation(sim),
         control_state(control_state_) {
-    root->setHeight(30.0f, GUI::Size::Fixed);
     generate_button = create<ToolOption>("Generate", [this]() { this->createMap(); });
     reset_map_button = create<ToolOption>("Reset Map", [this]() {
       this->simulation.world.resetMap();
@@ -33,10 +34,59 @@ struct MapGenerator : public GUI::NamedContainer {
     });
     generate_button->color = sf::Color(200, 255, 200);
     reset_map_button->color = sf::Color(255, 200, 200);
+
+    auto map_width_setter =
+        create<GUI::NamedContainer>("Map Width", GUI::Container::Orientation::Horizontal);
+    auto map_width_picker = create<SliderLabel>(270.0);
+    auto map_width_set_button = create<GUI::Button>("Set", [this, map_width_picker]() {
+      int new_width = (int)map_width_picker->getValue();
+      simulation_width = new_width;
+      std::cout << "New width: " << simulation_width << std::endl;
+    });
+    map_width_set_button->setWidth(30.0f);
+    map_width_set_button->setHeight(30.0f);
+    map_width_setter->addItem(map_width_picker);
+    map_width_setter->addItem(map_width_set_button);
+
+    auto map_height_setter =
+        create<GUI::NamedContainer>("Map Height", GUI::Container::Orientation::Horizontal);
+    auto map_height_picker = create<SliderLabel>(270.0);
+    auto map_height_set_button = create<GUI::Button>("Set", [this, map_height_picker]() {
+      int new_height = (int)map_height_picker->getValue();
+      simulation_height = new_height;
+    });
+    map_height_set_button->setWidth(30.0f);
+    map_height_set_button->setHeight(30.0f);
+    map_height_setter->addItem(map_height_picker);
+    map_height_setter->addItem(map_height_set_button);
+
+    auto fill_percentage_setter =
+        create<GUI::NamedContainer>("Fill Percentage", GUI::Container::Orientation::Horizontal);
+    auto fill_percentage_picker = create<SliderLabel>(100.0);
+    auto fill_percentage_set_button = create<GUI::Button>("Set", [this, fill_percentage_picker]() {
+      float new_fill_percentage = fill_percentage_picker->getValue();
+      fill_percentage = new_fill_percentage / 100;
+      std::cout << "New fill percentage: " << fill_percentage << std::endl;
+    });
+    fill_percentage_set_button->setWidth(30.0f);
+    fill_percentage_set_button->setHeight(30.0f);
+    fill_percentage_setter->addItem(fill_percentage_picker);
+    fill_percentage_setter->addItem(fill_percentage_set_button);
+
     // Add items
-    addItem(generate_button);
-    addItem(reset_map_button);
+
+    auto buttons = create<GUI::Container>(GUI::Container::Orientation::Horizontal);
+    buttons->size.y = 50.0f;
+    buttons->size_type.y = GUI::Size::Fixed;
+    buttons->addItem(generate_button);
+    buttons->addItem(reset_map_button);
+    addItem(buttons);
+    addItem(map_width_setter);
+    addItem(map_height_setter);
+    addItem(fill_percentage_setter);
   }
+
+  void createMap() { createMap2(); }
 
   sf::Vector2i getRandomPointInCircle(int32_t radius) {
     const double t = 2.0f * M_PI * RNGf::getUnder(1.0f);
@@ -314,7 +364,49 @@ struct MapGenerator : public GUI::NamedContainer {
     }
   }
 
-  void createMap() {
+  void createMap2() {
+    rooms_.clear();
+    simulation.world.resetMap();
+    simulation.world.fillWithWalls();
+    rooms_.push_back({0,
+                      sf::Vector2i{simulation.world.map.width / 2, simulation.world.map.height / 2},
+                      simulation_width, simulation_height});
+    std::cout << simulation_height << " " << simulation_width << std::endl;
+
+    for (const auto& room : rooms_) {
+      placeRoom(room);
+    }
+    simulation.main_rooms = rooms_;
+
+
+    for (int32_t x(1); x < simulation.world.map.width - 1; x += 1) {
+      for (int32_t y(1); y < simulation.world.map.height - 1; y += 1) {
+      }
+    }
+
+    for (int32_t x(1); x < simulation.world.map.width - 1; x += 1) {
+      for (int32_t y(1); y < simulation.world.map.height - 1; y += 1) {
+        if (RNGf::getUnder(1.0f) < fill_percentage) {
+          applyBrush(
+              sf::Vector2f{RNGf::getUnder(Conf::WORLD_WIDTH), RNGf::getUnder(Conf::WORLD_HEIGHT)},
+              [this](int32_t x, int32_t y) {
+                simulation.world.addWall(sf::Vector2i{x, y});
+              });
+        }
+      }
+    }
+
+    for (int i = 0; i < 10; ++i) {
+      smoothMap();
+    }
+
+    simulation.distance_field_builder.requestUpdate();
+
+    simulation.distance_field_builder.requestUpdate();
+  }
+
+  void createMap1() {
+    // generate dungeon using tinykeep algorithm
     rooms_.clear();
     simulation.world.resetMap();
     simulation.world.fillWithWalls();
