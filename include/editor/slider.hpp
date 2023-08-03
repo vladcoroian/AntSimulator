@@ -8,9 +8,9 @@ struct Slider : public GUI::Item {
   float max_value;
 
   Slider(float max_value_, float min_value_ = 0.0f, sf::Vector2f size_ = {},
-         sf::Vector2f position_ = {})
+         sf::Vector2f position_ = {}, float initial_ratio = 0.5f)
       : GUI::Item(size_, position_),
-        current_ratio(0.5f),
+        current_ratio(initial_ratio),
         min_value(min_value_),
         max_value(max_value_) {
     const float slider_height = 20.0f;
@@ -64,11 +64,11 @@ struct SliderLabel : public GUI::Container {
   SPtr<GUI::TextLabel> label;
 
   SliderLabel(float max_value_, float min_value_ = 0.0f, sf::Vector2f size_ = {},
-              sf::Vector2f position_ = {})
+              sf::Vector2f position_ = {}, float initial_ratio = 0.5f)
       : GUI::Container(GUI::Container::Orientation::Horizontal, size_, position_) {
     size_type.y = GUI::Size::FitContent;
 
-    slider = create<Slider>(max_value_, min_value_);
+    slider = create<Slider>(max_value_, min_value_, sf::Vector2f{}, sf::Vector2f{}, initial_ratio);
     label = create<GUI::TextLabel>("", 22);
     label->setWidth(20.0f);
     label->auto_size_update = false;

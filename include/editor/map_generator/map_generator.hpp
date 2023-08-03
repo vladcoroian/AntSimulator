@@ -37,7 +37,8 @@ struct MapGenerator : public GUI::NamedContainer {
 
     auto map_width_setter =
         create<GUI::NamedContainer>("Map Width", GUI::Container::Orientation::Horizontal);
-    auto map_width_picker = create<SliderLabel>(270.0);
+    auto map_width_picker =
+        create<SliderLabel>(simulation_width, 0, sf::Vector2f{}, sf::Vector2f{}, 1.0);
     auto map_width_set_button = create<GUI::Button>("Set", [this, map_width_picker]() {
       int new_width = (int)map_width_picker->getValue();
       simulation_width = new_width;
@@ -50,7 +51,8 @@ struct MapGenerator : public GUI::NamedContainer {
 
     auto map_height_setter =
         create<GUI::NamedContainer>("Map Height", GUI::Container::Orientation::Horizontal);
-    auto map_height_picker = create<SliderLabel>(270.0);
+    auto map_height_picker =
+        create<SliderLabel>(simulation_height, 0, sf::Vector2f{}, sf::Vector2f{}, 1.0);
     auto map_height_set_button = create<GUI::Button>("Set", [this, map_height_picker]() {
       int new_height = (int)map_height_picker->getValue();
       simulation_height = new_height;
@@ -62,7 +64,8 @@ struct MapGenerator : public GUI::NamedContainer {
 
     auto fill_percentage_setter =
         create<GUI::NamedContainer>("Fill Percentage", GUI::Container::Orientation::Horizontal);
-    auto fill_percentage_picker = create<SliderLabel>(100.0);
+    auto fill_percentage_picker =
+        create<SliderLabel>(100.0, 0, sf::Vector2f{}, sf::Vector2f{}, fill_percentage);
     auto fill_percentage_set_button = create<GUI::Button>("Set", [this, fill_percentage_picker]() {
       float new_fill_percentage = fill_percentage_picker->getValue();
       fill_percentage = new_fill_percentage / 100;
@@ -377,7 +380,6 @@ struct MapGenerator : public GUI::NamedContainer {
       placeRoom(room);
     }
     simulation.main_rooms = rooms_;
-
 
     for (int32_t x(1); x < simulation.world.map.width - 1; x += 1) {
       for (int32_t y(1); y < simulation.world.map.height - 1; y += 1) {
