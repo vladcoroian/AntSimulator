@@ -21,12 +21,17 @@ struct Simulation {
   sf::Clock clock;
   AsyncDistanceFieldBuilder distance_field_builder;
   std::vector<edtr::Room> main_rooms;
+  std::ofstream log_file;
+  int iteration;
 
   explicit Simulation(sf::Window& window)
       : world(Conf::WORLD_WIDTH, Conf::WORLD_HEIGHT),
         renderer(),
         distance_field_builder(world.map) {
     distance_field_builder.requestUpdate();
+    iteration = 0;
+    log_file.open("out/log.csv");
+    log_file << "time,food,colony_size,positions" << std::endl;
   }
 
   void loadMap(const std::string& map_filename) {
@@ -76,6 +81,24 @@ struct Simulation {
       fight_system.checkForFights(colonies, world);
       // Update stats
       renderer.updateColoniesStats(dt);
+      // Update logs
+      iteration++;
+      logStep(dt);
+    }
+  }
+
+  void logStep(float dt) {
+    if (log_file.is_open()) {
+      for (Colony& colony : colonies) {
+        log_file << iteration << "," << this->world.map.food_count << "," << colony.ants.size()
+                 << ",";
+        log_file << "\"";
+        for (Ant& ant : colony.ants) {
+          // print position of each ant
+          log_file << "(" << ant.position.x << "-" << ant.position.y << ");";
+        }
+        log_file << "\"" << std::endl;
+      }
     }
   }
 

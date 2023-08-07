@@ -81,6 +81,7 @@ struct SimulationManager : public GUI::NamedContainer {
   SPtr<ToolOption> tool_play;
   SPtr<GUI::NamedToggle> tool_speed;
   SPtr<SliderLabel> seed_picker;
+  SPtr<GUI::Button> gen_csv_button;
 
   SimulationManager(Simulation& sim, ControlState& control_state_, SPtr<ColonyCreator> colonies)
       : GUI::NamedContainer("Simulation Manager", Container::Orientation::Vertical),
@@ -125,6 +126,10 @@ struct SimulationManager : public GUI::NamedContainer {
 
     food_chart = create<FoodStats>(simulation, control_state);
 
+    gen_csv_button = create<ToolOption>("Save CSV", [this]() { simulation.log_file.close(); });
+    gen_csv_button->setWidth(100.0f);
+    gen_csv_button->setHeight(50.0f);
+
     // Add items
     auto buttons = create<GUI::Container>(GUI::Container::Orientation::Horizontal);
     buttons->size.x = 400.0f;
@@ -133,10 +138,12 @@ struct SimulationManager : public GUI::NamedContainer {
     buttons->addItem(tool_pause);
     buttons->addItem(tool_play);
     buttons->addItem(tool_speed);
+    buttons->addItem(gen_csv_button);
     addItem(buttons);
     addItem(seed_setter);
     addItem(colonies);
     addItem(food_chart);
+
     // Default selection
     select(State::Pause);
   }
