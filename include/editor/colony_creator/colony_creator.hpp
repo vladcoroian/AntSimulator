@@ -55,16 +55,20 @@ struct ColonyCreator : public GUI::NamedContainer {
     }
   }
 
-  void createRandomColony() {
-    // select random room and place colony in center
-    if (!simulation.main_rooms.empty()) {
-      const int index = RNGf::getUnder(simulation.main_rooms.size());
-      const auto& room = simulation.main_rooms[index];
-      this->createColony(room.pos.x * simulation.world.map.cell_size,
-                         room.pos.y * simulation.world.map.cell_size);
-    } else {
+  sf::Vector2i createRandomColony(sf::Vector2i pos = sf::Vector2i(-1, -1)) {
+    if (simulation.main_rooms.empty()) {
       std::cout << "No room to place colony in" << std::endl;
+      return sf::Vector2i(-1, -1);
     }
+    // select random room and place colony in center
+    const int index = RNGf::getUnder(simulation.main_rooms.size());
+    const auto& room = simulation.main_rooms[index];
+    if (pos.x == -1 && pos.y == -1) {
+      pos.x = room.pos.x * simulation.world.map.cell_size;
+      pos.y = room.pos.y * simulation.world.map.cell_size;
+    }
+    this->createColony(pos.x, pos.y);
+    return sf::Vector2i(pos.x, pos.y);
   }
 
   void removeAllColonies() {

@@ -82,7 +82,7 @@ struct SimulationManager : public GUI::NamedContainer {
   SPtr<GUI::NamedToggle> tool_speed;
   SPtr<SliderLabel> seed_picker;
 
-  SimulationManager(Simulation& sim, ControlState& control_state_)
+  SimulationManager(Simulation& sim, ControlState& control_state_, SPtr<ColonyCreator> colonies)
       : GUI::NamedContainer("Simulation Manager", Container::Orientation::Vertical),
         simulation(sim),
         control_state(control_state_),
@@ -135,6 +135,7 @@ struct SimulationManager : public GUI::NamedContainer {
     buttons->addItem(tool_speed);
     addItem(buttons);
     addItem(seed_setter);
+    addItem(colonies);
     addItem(food_chart);
     // Default selection
     select(State::Pause);

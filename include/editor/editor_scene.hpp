@@ -33,6 +33,7 @@ struct EditorScene : public GUI::Scene {
   SPtr<ColonyCreator> colonies;
   SPtr<SimulationManager> simulation_manager;
   SPtr<SpawnFoodSource> spawn_food_sources;
+  sf::Vector2i colony_location = {-1, -1};
 
   explicit EditorScene(sf::RenderWindow& window, Simulation& sim)
       : GUI::Scene(window), control_state(sim), simulation(sim) {
@@ -143,11 +144,10 @@ struct EditorScene : public GUI::Scene {
       colonies->setColonySize(colony_size_slider->getValue());
     });
     toolbox->addItem(colony_settings);
-    toolbox->addItem(colonies);
   }
 
   void initializeSimulationManager() {
-    simulation_manager = create<SimulationManager>(simulation, control_state);
+    simulation_manager = create<SimulationManager>(simulation, control_state, colonies);
     watch(simulation_manager, [this]() {
       this->renderer->current_time_state = simulation_manager->current_state;
       this->control_state.updating =
@@ -174,9 +174,11 @@ struct EditorScene : public GUI::Scene {
       if (!regenerate_map_toggle->getState()) {
         simulation.world.resetMap();
         map_generator->createMap();
+        colonies->createRandomColony(colony_location);
+      } else {
+        colony_location = colonies->createRandomColony();
       }
       spawn_food_sources->spawnFoodSources();
-      colonies->createRandomColony();
       simulation_manager->startSimulation();
     });
     full_simulation->color = {255, 200, 0};
@@ -185,7 +187,7 @@ struct EditorScene : public GUI::Scene {
 
     full_simulation_container->addItem(full_simulation);
     full_simulation_container->addItem(regenerate_map_toggle);
-    toolbox->addItem(full_simulation_container);
+    simulation_manager->addItem(full_simulation_container);
   }
 
   void updateRenderOptions() const {
