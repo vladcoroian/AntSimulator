@@ -81,6 +81,7 @@ struct SimulationManager : public GUI::NamedContainer {
   SPtr<ToolOption> tool_play;
   SPtr<GUI::NamedToggle> tool_speed;
   SPtr<SliderLabel> seed_picker;
+  SPtr<SliderLabel> liberty_coef_picker;
   SPtr<GUI::Button> gen_csv_button;
 
   SimulationManager(Simulation& sim, ControlState& control_state_, SPtr<ColonyCreator> colonies)
@@ -124,6 +125,21 @@ struct SimulationManager : public GUI::NamedContainer {
     seed_setter->addItem(seed_picker);
     seed_setter->addItem(seed_set_button);
 
+    auto liberty_coef_setter =
+        create<GUI::NamedContainer>("Liberty Coef", GUI::Container::Orientation::Horizontal);
+    liberty_coef_picker = create<SliderLabel>(0.3f, 0.0f, sf::Vector2f{}, sf::Vector2f{},
+                                              simulation.max_liberty_coef / 0.3f, 2);
+    liberty_coef_setter->setWidth(500.0f);
+    liberty_coef_picker->setWidth(430.0f);
+    auto liberty_coef_set_button = create<GUI::Button>("Set", [this]() {
+      float new_liberty_coef = (float)liberty_coef_picker->getValue();
+      std::cout << "Setting liberty coef to " << new_liberty_coef << std::endl;
+      simulation.max_liberty_coef = round(new_liberty_coef * 100.0) / 100.0;
+    });
+    liberty_coef_set_button->setHeight(30.0f);
+    liberty_coef_setter->addItem(liberty_coef_picker);
+    liberty_coef_setter->addItem(liberty_coef_set_button);
+
     food_chart = create<FoodStats>(simulation, control_state);
 
     gen_csv_button = create<ToolOption>("Save CSV", [this]() { simulation.log_file.close(); });
@@ -141,6 +157,7 @@ struct SimulationManager : public GUI::NamedContainer {
     buttons->addItem(gen_csv_button);
     addItem(buttons);
     addItem(seed_setter);
+    addItem(liberty_coef_setter);
     addItem(colonies);
     addItem(food_chart);
 

@@ -23,14 +23,17 @@ struct Simulation {
   std::vector<edtr::Room> main_rooms;
   std::ofstream log_file;
   int iteration;
+  float max_liberty_coef = 0.01f;
 
-  explicit Simulation(sf::Window& window)
+  explicit Simulation(sf::Window& window, float max_liberty_coef = 0.01)
       : world(Conf::WORLD_WIDTH, Conf::WORLD_HEIGHT),
         renderer(),
-        distance_field_builder(world.map) {
+        distance_field_builder(world.map),
+        max_liberty_coef(max_liberty_coef) {
     distance_field_builder.requestUpdate();
     iteration = 0;
     log_file.open("out/log.csv");
+    log_file.clear();
     log_file << "time,food,colony_size,positions" << std::endl;
   }
 
@@ -43,7 +46,7 @@ struct Simulation {
                                 int32_t max_ants_count = Conf::ANTS_COUNT) {
     // Create the colony object
     const civ::ID colony_id =
-        colonies.emplace_back(colony_x, colony_y, max_ants_count, max_autonomy);
+        colonies.emplace_back(colony_x, colony_y, max_ants_count, max_autonomy, max_liberty_coef);
     auto colony_ref = colonies.getRef(colony_id);
     Colony& colony = *colony_ref;
     colony.initialize(to<uint8_t>(colony_id));
@@ -83,21 +86,24 @@ struct Simulation {
       renderer.updateColoniesStats(dt);
       // Update logs
       iteration++;
-      logStep(dt);
+      logStep();
     }
   }
 
-  void logStep(float dt) {
+  void logStep() {
     if (log_file.is_open()) {
       for (Colony& colony : colonies) {
         log_file << iteration << "," << this->world.map.food_count << "," << colony.ants.size()
                  << ",";
-        log_file << "\"";
-        for (Ant& ant : colony.ants) {
-          // print position of each ant
-          log_file << "(" << ant.position.x << "-" << ant.position.y << ");";
+        if (iteration % 10 == 1) {
+          log_file << "\"";
+          for (Ant& ant : colony.ants) {
+            // print position of each ant
+            log_file << "(" << ant.position.x << "-" << ant.position.y << ");";
+          }
+          log_file << "\"";
         }
-        log_file << "\"" << std::endl;
+        log_file << std::endl;
       }
     }
   }

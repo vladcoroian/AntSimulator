@@ -62,10 +62,12 @@ struct Slider : public GUI::Item {
 struct SliderLabel : public GUI::Container {
   SPtr<Slider> slider;
   SPtr<GUI::TextLabel> label;
+  int precision = 0;
 
   SliderLabel(float max_value_, float min_value_ = 0.0f, sf::Vector2f size_ = {},
-              sf::Vector2f position_ = {}, float initial_ratio = 0.5f)
-      : GUI::Container(GUI::Container::Orientation::Horizontal, size_, position_) {
+              sf::Vector2f position_ = {}, float initial_ratio = 0.5f, int precision = 0)
+      : GUI::Container(GUI::Container::Orientation::Horizontal, size_, position_),
+        precision(precision) {
     size_type.y = GUI::Size::FitContent;
 
     slider = create<Slider>(max_value_, min_value_, sf::Vector2f{}, sf::Vector2f{}, initial_ratio);
@@ -80,8 +82,14 @@ struct SliderLabel : public GUI::Container {
     updateLabel();
   }
 
+  std::string formatWithPrecision(float value) {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(precision) << value;
+    return oss.str();
+  }
+
   void updateLabel() {
-    label->setText(toStr(int(slider->getValue())));
+    label->setText(formatWithPrecision(slider->getValue()));
     notifyChanged();
   }
 

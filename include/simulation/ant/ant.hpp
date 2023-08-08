@@ -68,14 +68,15 @@ struct Ant {
   Type type = Type::Worker;
 
   Ant() = default;
-  Ant(float x, float y, float angle, uint8_t colony_id, float max_autonomy = 300.0f)
+  Ant(float x, float y, float angle, uint8_t colony_id, float max_autonomy = 300.0f,
+      float max_liberty_coef = 0.01f)
       : position(x, y),
         direction(angle),
         direction_update(direction_update_period, RNGf::getUnder(1.0f) * direction_update_period),
         marker_add(marker_period, RNGf::getUnder(1.0f) * marker_period),
         search_markers(5.0f, 5.0f),
         phase(Mode::ToFood),
-        liberty_coef(RNGf::getRange(0.001f, 0.01f)),
+        liberty_coef(RNGf::getRange(0.001f, max_liberty_coef)),
         fight_mode(FightMode::NoFight),
         col_id(colony_id),
         attack_cooldown(1.5f, 0.0f),

@@ -23,10 +23,12 @@ struct Colony {
   bool position_changed = false;
   bool can_create_ants = false;
   float max_autonomy = 300.0f;
+  float max_liberty_coef = 0.01f;
 
   Colony() = default;
 
-  Colony(float x, float y, uint32_t n, float max_autonomy = 300.0f, bool can_create_ants = false)
+  Colony(float x, float y, uint32_t n, float max_autonomy = 300.0f, bool can_create_ants = false,
+         float max_liberty_coef = 0.01f)
       : base(sf::Vector2f(x, y), 20.0f),
         max_ants_count(n),
         ants_creation_cooldown(0.125f),
@@ -34,7 +36,8 @@ struct Colony {
         pop_diff(60),
         id(0),
         max_autonomy(max_autonomy),
-        can_create_ants(can_create_ants) {}
+        can_create_ants(can_create_ants),
+        max_liberty_coef(max_liberty_coef) {}
 
   void initialize(uint8_t colony_id) {
     id = colony_id;
@@ -55,8 +58,9 @@ struct Colony {
 
   Ant& createWorker() {
     ++ant_creation_id;
-    const uint64_t ant_id = ants.emplace_back(base.position.x, base.position.y,
-                                              RNGf::getUnder(2.0f * PI), id, max_autonomy);
+    const uint64_t ant_id =
+        ants.emplace_back(base.position.x, base.position.y, RNGf::getUnder(2.0f * PI), id,
+                          max_autonomy, max_liberty_coef);
     Ant& ant = ants[ant_id];
     ant.id = to<uint16_t>(ant_id);
     ant.type = Ant::Type::Worker;

@@ -170,6 +170,7 @@ struct EditorScene : public GUI::Scene {
     auto full_simulation = create<ToolOption>("Full Simulation", [this, regenerate_map_toggle]() {
       // generate map, spawn colonies, spawn food
       simulation.world.removeAllFood();
+      simulation.log_file.clear();
       colonies->removeAllColonies();
       if (!regenerate_map_toggle->getState()) {
         simulation.world.resetMap();
